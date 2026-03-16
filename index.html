@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="F1 Live">
+<meta name="theme-color" content="#0a0a0a">
+<title>F1 Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #e10600;
+    --red-dim: #8b0400;
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --surface3: #222222;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --green: #00d2be;
+    --yellow: #ffd700;
+    --white: #ffffff;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  /* ── LAYOUT ── */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--bg);
+    border-bottom: 2px solid var(--red);
+    padding: calc(var(--safe-top) + 10px) 16px 10px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .f1-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    letter-spacing: -1px;
+    color: var(--white);
+  }
+  .f1-logo span { color: var(--red); }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .live-badge.active { color: var(--green); }
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .live-badge.active .live-dot {
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; } 50% { opacity:0.4; }
+  }
+
+  .refresh-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .refresh-btn:hover { border-color: var(--red); color: var(--red); }
+  .refresh-btn.spinning { animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .session-info {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.5px;
+  }
+  .session-info strong { color: var(--text-dim); }
+
+  /* ── TABS ── */
+  nav {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 11px 4px;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .tab.active {
+    color: var(--white);
+    border-bottom-color: var(--red);
+  }
+
+  /* ── CONTENT AREA ── */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(var(--safe-bottom) + 8px);
+  }
+
+  /* ── PANELS ── */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.5px;
+  }
+  .status-bar .lap-info { color: var(--yellow); font-weight: 700; font-size: 12px; }
+
+  /* ── RACE TABLE ── */
+  .race-table { width: 100%; }
+
+  .race-row {
+    display: grid;
+    grid-template-columns: 36px 8px 1fr 70px 60px;
+    align-items: center;
+    gap: 0 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+    position: relative;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateX(-4px); } to { opacity:1; transform: none; } }
+
+  .race-row.leader { background: rgba(225,6,0,0.07); }
+  .race-row.highlight { background: rgba(255,215,0,0.05); animation: flash 0.5s ease; }
+  @keyframes flash { 0%,100% { background: rgba(255,215,0,0.05); } 50% { background: rgba(255,215,0,0.15); } }
+
+  .pos {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    text-align: center;
+    color: var(--text-dim);
+    line-height: 1;
+  }
+  .pos.p1 { color: var(--yellow); }
+  .pos.p2 { color: #c0c0c0; }
+  .pos.p3 { color: #cd7f32; }
+
+  .team-bar {
+    width: 4px;
+    height: 36px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .driver-info { overflow: hidden; }
+  .driver-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.1;
+  }
+  .driver-team {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.3px;
+  }
+  .driver-abbr {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+
+  .gap-col {
+    text-align: right;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.2;
+  }
+  .gap-col .gap { font-size: 12px; }
+  .gap-col .interval { font-size: 10px; color: var(--text-muted); }
+
+  .tyre-col {
+    text-align: right;
+    font-size: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .tyre-dot {
+    display: inline-block;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    line-height: 20px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 800;
+  }
+  .tyre-S { background: #e10600; color: #fff; }
+  .tyre-M { background: #ffd700; color: #000; }
+  .tyre-H { background: #e0e0e0; color: #000; }
+  .tyre-I { background: #00a550; color: #fff; }
+  .tyre-W { background: #0067ff; color: #fff; }
+  .tyre-X { background: #555; color: #fff; }
+
+  /* ── STANDINGS TABLE (Drivers + Constructors) ── */
+  .standings-table { width: 100%; }
+
+  .standings-header {
+    display: grid;
+    padding: 8px 12px;
+    background: var(--surface3);
+    border-bottom: 1px solid var(--border);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .standings-header.drivers { grid-template-columns: 36px 8px 1fr 50px 60px; gap: 0 8px; }
+  .standings-header.constructors { grid-template-columns: 36px 8px 1fr 60px; gap: 0 8px; }
+
+  .standings-row {
+    display: grid;
+    align-items: center;
+    gap: 0 8px;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .standings-row.drivers { grid-template-columns: 36px 8px 1fr 50px 60px; }
+  .standings-row.constructors { grid-template-columns: 36px 8px 1fr 60px; }
+  .standings-row:hover { background: var(--surface2); }
+  .standings-row.leader { background: rgba(225,6,0,0.06); }
+
+  .pts {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--white);
+    text-align: right;
+  }
+  .pts-diff {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+  .wins-col {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* Progress bar for constructors */
+  .pts-bar-wrap { position: relative; }
+  .pts-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  .pts-bar-fill {
+    height: 100%;
+    border-radius: 1px;
+    transition: width 0.6s ease;
+  }
+
+  /* ── LOADING / ERROR ── */
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 14px;
+    color: var(--text-muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .spinner {
+    width: 32px; height: 32px;
+    border: 2px solid var(--border);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .error-box {
+    margin: 20px 16px;
+    padding: 14px 16px;
+    background: rgba(225,6,0,0.08);
+    border: 1px solid rgba(225,6,0,0.3);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .error-box strong { color: var(--red); display: block; margin-bottom: 4px; font-family: 'Barlow Condensed', sans-serif; font-size:15px; letter-spacing:0.5px; }
+
+  .no-race {
+    padding: 24px 16px;
+    text-align: center;
+  }
+  .no-race-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .no-race-sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+  /* ── LAST UPDATED ── */
+  .updated-bar {
+    padding: 6px 16px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.5px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+
+  /* ── SCROLLBAR ── */
+  .content::-webkit-scrollbar { width: 3px; }
+  .content::-webkit-scrollbar-track { background: transparent; }
+  .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── POSITION CHANGE INDICATOR ── */
+  .pos-change {
+    font-size: 9px;
+    font-weight: 700;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .pos-change.up { color: var(--green); }
+  .pos-change.down { color: var(--red); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="header-inner">
+      <div class="f1-logo">F1<span>●</span>LIVE</div>
+      <div class="live-badge" id="liveBadge"><div class="live-dot"></div><span id="liveText">CONNECTING</span></div>
+      <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()">↻ REFRESH</button>
+    </div>
+    <div class="session-info" id="sessionInfo">Loading session data…</div>
+  </header>
+
+  <nav>
+    <div class="tab active" onclick="switchTab('race')" id="tab-race">🏁 RACE</div>
+    <div class="tab" onclick="switchTab('drivers')" id="tab-drivers">DRIVERS</div>
+    <div class="tab" onclick="switchTab('constructors')" id="tab-constructors">TEAMS</div>
+  </nav>
+
+  <div class="content">
+    <!-- RACE PANEL -->
+    <div class="panel active" id="panel-race">
+      <div id="race-status-bar" class="status-bar" style="display:none">
+        <span id="race-status-text">–</span>
+        <span class="lap-info" id="race-lap-text">–</span>
+      </div>
+      <div id="race-content"><div class="loading"><div class="spinner"></div>Loading race data…</div></div>
+      <div class="updated-bar" id="race-updated">–</div>
+    </div>
+
+    <!-- DRIVERS PANEL -->
+    <div class="panel" id="panel-drivers">
+      <div id="drivers-content"><div class="loading"><div class="spinner"></div>Loading standings…</div></div>
+      <div class="updated-bar" id="drivers-updated">–</div>
+    </div>
+
+    <!-- CONSTRUCTORS PANEL -->
+    <div class="panel" id="panel-constructors">
+      <div id="constructors-content"><div class="loading"><div class="spinner"></div>Loading standings…</div></div>
+      <div class="updated-bar" id="constructors-updated">–</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// TEAM COLOURS (2025 grid)
+// ─────────────────────────────────────────────
+const TEAM_COLORS = {
+  'red bull':       '#3671C6',
+  'red_bull':       '#3671C6',
+  'redbull':        '#3671C6',
+  'ferrari':        '#E8002D',
+  'mercedes':       '#27F4D2',
+  'mclaren':        '#FF8000',
+  'aston martin':   '#229971',
+  'aston_martin':   '#229971',
+  'astonmartin':    '#229971',
+  'alpine':         '#FF87BC',
+  'williams':       '#64C4FF',
+  'rb':             '#6692FF',
+  'racing bulls':   '#6692FF',
+  'haas':           '#B6BABD',
+  'kick sauber':    '#52E252',
+  'sauber':         '#52E252',
+  'alfa romeo':     '#C92D4B',
+  'alphatauri':     '#5E8FAA',
+};
+
+function teamColor(name) {
+  if (!name) return '#555';
+  const key = name.toLowerCase().replace(/\s+/g,'');
+  for (const [k, v] of Object.entries(TEAM_COLORS)) {
+    if (key.includes(k.replace(/\s+/g,''))) return v;
+  }
+  return '#555';
+}
+
+// ─────────────────────────────────────────────
+// CORS PROXY — routes all requests through a
+// free proxy so the file works locally / on iPhone
+// Falls back through multiple proxies if one fails
+// ─────────────────────────────────────────────
+const PROXIES = [
+  url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://thingproxy.freeboard.io/fetch/${url}`,
+];
+
+async function proxyFetch(url) {
+  let lastErr;
+  for (const proxy of PROXIES) {
+    try {
+      const res = await fetch(proxy(url), { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res;
+    } catch(e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('All proxies failed');
+}
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let activeTab = 'race';
+let pollTimer = null;
+let raceIsLive = false;
+let currentSession = null;
+let prevPositions = {};
+
+// ─────────────────────────────────────────────
+// TAB SWITCHING
+// ─────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+// ─────────────────────────────────────────────
+// REFRESH BUTTON
+// ─────────────────────────────────────────────
+function manualRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  fetchAll().finally(() => btn.classList.remove('spinning'));
+}
+
+// ─────────────────────────────────────────────
+// LIVE STATUS BADGE
+// ─────────────────────────────────────────────
+function setLiveStatus(isLive, label) {
+  const badge = document.getElementById('liveBadge');
+  const text  = document.getElementById('liveText');
+  badge.className = 'live-badge' + (isLive ? ' active' : '');
+  text.textContent = label;
+}
+
+function fmtTime(d) {
+  return d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+
+// ─────────────────────────────────────────────
+// OPENF1 — LIVE RACE POSITIONS
+// ─────────────────────────────────────────────
+async function fetchLiveRace() {
+  try {
+    // Get latest session
+    const sessRes = await proxyFetch('https://api.openf1.org/v1/sessions?session_type=Race&year=2025');
+    const sessions = await sessRes.json();
+    if (!sessions || sessions.length === 0) throw new Error('No sessions');
+
+    // Most recent
+    sessions.sort((a,b) => new Date(b.date_start) - new Date(a.date_start));
+    const session = sessions[0];
+    currentSession = session;
+
+    const sessionKey = session.session_key;
+    const now = new Date();
+    const start = new Date(session.date_start);
+    const end   = session.date_end ? new Date(session.date_end) : null;
+
+    raceIsLive = now >= start && (!end || now <= end);
+
+    document.getElementById('sessionInfo').innerHTML =
+      `<strong>${session.meeting_name || session.circuit_short_name}</strong> · ${session.country_name || ''} · ${session.session_name || 'Race'}`;
+
+    setLiveStatus(raceIsLive, raceIsLive ? 'LIVE' : (now < start ? 'PRE-RACE' : 'FINISHED'));
+
+    // Get positions
+    const posRes = await proxyFetch(`https://api.openf1.org/v1/position?session_key=${sessionKey}`);
+    const posData = await posRes.json();
+
+    // Get drivers
+    const drvRes = await proxyFetch(`https://api.openf1.org/v1/drivers?session_key=${sessionKey}`);
+    const drivers = await drvRes.json();
+
+    const driverMap = {};
+    drivers.forEach(d => driverMap[d.driver_number] = d);
+
+    // Latest position per driver
+    const latest = {};
+    posData.forEach(p => {
+      if (!latest[p.driver_number] || new Date(p.date) > new Date(latest[p.driver_number].date)) {
+        latest[p.driver_number] = p;
+      }
+    });
+
+    const sorted = Object.values(latest).sort((a,b) => a.position - b.position);
+
+    // Get intervals if live or finished recently
+    let intervals = {};
+    try {
+      const intRes = await proxyFetch(`https://api.openf1.org/v1/intervals?session_key=${sessionKey}`);
+      const intData = await intRes.json();
+      const latestInt = {};
+      intData.forEach(i => {
+        if (!latestInt[i.driver_number] || new Date(i.date) > new Date(latestInt[i.driver_number].date)) {
+          latestInt[i.driver_number] = i;
+        }
+      });
+      intervals = latestInt;
+    } catch(e) {}
+
+    // Get stints/tyres
+    let tyres = {};
+    try {
+      const stintRes = await proxyFetch(`https://api.openf1.org/v1/stints?session_key=${sessionKey}`);
+      const stintData = await stintRes.json();
+      const latestStint = {};
+      stintData.forEach(s => {
+        if (!latestStint[s.driver_number] || s.stint_number > (latestStint[s.driver_number]?.stint_number||0)) {
+          latestStint[s.driver_number] = s;
+        }
+      });
+      tyres = latestStint;
+    } catch(e) {}
+
+    // Get laps
+    let lapData = {};
+    try {
+      const lapRes = await proxyFetch(`https://api.openf1.org/v1/laps?session_key=${sessionKey}&driver_number=${sorted[0]?.driver_number}`);
+      const laps = await lapRes.json();
+      if (laps && laps.length > 0) lapData = { current: laps[laps.length-1].lap_number, total: session.total_laps || '—' };
+    } catch(e) {}
+
+    // Status bar
+    const statusBar = document.getElementById('race-status-bar');
+    statusBar.style.display = 'flex';
+    document.getElementById('race-status-text').textContent = raceIsLive ? '⬤ SESSION LIVE' : (now < start ? `Starts ${start.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}` : 'SESSION ENDED');
+    document.getElementById('race-lap-text').textContent = lapData.current ? `LAP ${lapData.current} / ${lapData.total}` : '';
+
+    // Render
+    if (sorted.length === 0) {
+      document.getElementById('race-content').innerHTML = renderNoRace(session, now < start);
+    } else {
+      renderRaceTable(sorted, driverMap, intervals, tyres);
+    }
+    document.getElementById('race-updated').textContent = `Updated ${fmtTime(now)}`;
+
+  } catch(e) {
+    document.getElementById('race-content').innerHTML =
+      `<div class="error-box"><strong>Race Data Unavailable</strong>Could not reach OpenF1 API. Check your connection.<br><small style="color:var(--text-muted)">${e.message}</small></div>`;
+    setLiveStatus(false, 'OFFLINE');
+  }
+}
+
+function renderNoRace(session, upcoming) {
+  const d = new Date(session.date_start);
+  const formatted = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  return `<div class="no-race">
+    <div class="no-race-title">${upcoming ? '🏎 UPCOMING' : '🏁 FINISHED'}</div>
+    <div class="no-race-sub">
+      ${session.meeting_name || session.circuit_short_name}<br>
+      ${session.country_name || ''}<br>
+      ${upcoming ? `Starts ${formatted}` : 'Race complete — standings updated below'}
+    </div>
+  </div>`;
+}
+
+function renderRaceTable(sorted, driverMap, intervals, tyres) {
+  const leaderGap = {};
+  let leaderTime = null;
+  const rows = sorted.map((p, idx) => {
+    const drv = driverMap[p.driver_number] || {};
+    const name = drv.full_name || `Driver ${p.driver_number}`;
+    const abbr = drv.name_acronym || '???';
+    const team = drv.team_name || '';
+    const color = teamColor(drv.team_colour || team);
+    const pos = p.position;
+    const posClass = pos === 1 ? 'p1' : pos === 2 ? 'p2' : pos === 3 ? 'p3' : '';
+
+    const intv = intervals[p.driver_number];
+    let gapStr = '–', intvStr = '';
+    if (pos === 1) { gapStr = 'LEADER'; }
+    else if (intv) {
+      if (intv.gap_to_leader !== null && intv.gap_to_leader !== undefined) gapStr = typeof intv.gap_to_leader === 'number' ? `+${intv.gap_to_leader.toFixed(3)}s` : String(intv.gap_to_leader);
+      if (intv.interval !== null && intv.interval !== undefined) intvStr = typeof intv.interval === 'number' ? `+${intv.interval.toFixed(3)}` : String(intv.interval);
+    }
+
+    const stint = tyres[p.driver_number];
+    const compound = stint?.compound?.charAt(0) || 'X';
+    const tyreClass = 'tyre-' + compound;
+
+    // Position change
+    const prevPos = prevPositions[p.driver_number];
+    let changeEl = '';
+    if (prevPos !== undefined && prevPos !== pos) {
+      const diff = prevPos - pos;
+      changeEl = `<span class="pos-change ${diff > 0 ? 'up':'down'}">${diff > 0 ? '▲':'▼'}</span>`;
+    }
+
+    const rowClass = pos === 1 ? 'race-row leader' : 'race-row';
+    return `<div class="${rowClass}" id="row-${p.driver_number}">
+      <div class="pos ${posClass}">${pos}</div>
+      <div class="team-bar" style="background:${color}"></div>
+      <div class="driver-info">
+        <div class="driver-name">${name} ${changeEl}</div>
+        <div class="driver-team">${team || '&nbsp;'}</div>
+      </div>
+      <div class="gap-col">
+        <div class="gap">${gapStr}</div>
+        ${intvStr ? `<div class="interval">${intvStr}</div>` : ''}
+      </div>
+      <div class="tyre-col"><span class="tyre-dot ${tyreClass}">${compound}</span></div>
+    </div>`;
+  });
+
+  // Save positions for change detection
+  sorted.forEach(p => prevPositions[p.driver_number] = p.position);
+
+  document.getElementById('race-content').innerHTML =
+    `<div class="race-table">${rows.join('')}</div>`;
+}
+
+// ─────────────────────────────────────────────
+// JOLPICA — DRIVER STANDINGS
+// ─────────────────────────────────────────────
+async function fetchDriverStandings() {
+  try {
+    const res = await proxyFetch('https://api.jolpi.ca/ergast/f1/2025/driverStandings.json');
+    const json = await res.json();
+    const standings = json?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings;
+    if (!standings) throw new Error('No data');
+
+    const maxPts = parseFloat(standings[0]?.points || 1);
+    const header = `<div class="standings-header drivers">
+      <div>POS</div><div></div><div>DRIVER</div><div style="text-align:center">W</div><div style="text-align:right">PTS</div>
+    </div>`;
+
+    const rows = standings.map((s, i) => {
+      const drv = s.Driver;
+      const con = s.Constructors?.[0];
+      const name = `${drv.givenName} ${drv.familyName}`;
+      const team = con?.name || '';
+      const color = teamColor(team);
+      const pts = parseFloat(s.points);
+      const ptsFromLeader = i === 0 ? '' : `-${(maxPts - pts).toFixed(0)}`;
+      const pos = parseInt(s.position);
+      const posClass = pos===1?'p1':pos===2?'p2':pos===3?'p3':'';
+
+      return `<div class="standings-row drivers ${pos===1?'leader':''}">
+        <div class="pos ${posClass}">${pos}</div>
+        <div class="team-bar" style="background:${color}"></div>
+        <div class="driver-info">
+          <div class="driver-name">${name}</div>
+          <div class="driver-team">${team}</div>
+        </div>
+        <div class="wins-col">${s.wins}</div>
+        <div>
+          <div class="pts">${s.points}</div>
+          <div class="pts-diff">${ptsFromLeader}</div>
+        </div>
+      </div>`;
+    });
+
+    document.getElementById('drivers-content').innerHTML = header + `<div class="standings-table">${rows.join('')}</div>`;
+    document.getElementById('drivers-updated').textContent = `Updated ${fmtTime(new Date())}`;
+  } catch(e) {
+    document.getElementById('drivers-content').innerHTML =
+      `<div class="error-box"><strong>Standings Unavailable</strong>Could not reach Jolpica API.<br><small style="color:var(--text-muted)">${e.message}</small></div>`;
+  }
+}
+
+// ─────────────────────────────────────────────
+// JOLPICA — CONSTRUCTOR STANDINGS
+// ─────────────────────────────────────────────
+async function fetchConstructorStandings() {
+  try {
+    const res = await proxyFetch('https://api.jolpi.ca/ergast/f1/2025/constructorStandings.json');
+    const json = await res.json();
+    const standings = json?.MRData?.StandingsTable?.StandingsLists?.[0]?.ConstructorStandings;
+    if (!standings) throw new Error('No data');
+
+    const maxPts = parseFloat(standings[0]?.points || 1);
+    const header = `<div class="standings-header constructors">
+      <div>POS</div><div></div><div>CONSTRUCTOR</div><div style="text-align:right">PTS</div>
+    </div>`;
+
+    const rows = standings.map((s, i) => {
+      const con = s.Constructor;
+      const team = con?.name || '';
+      const color = teamColor(team);
+      const pts = parseFloat(s.points);
+      const pct = (pts / maxPts * 100).toFixed(1);
+      const ptsFromLeader = i === 0 ? '' : `-${(maxPts - pts).toFixed(0)}`;
+      const pos = parseInt(s.position);
+      const posClass = pos===1?'p1':pos===2?'p2':pos===3?'p3':'';
+
+      return `<div class="standings-row constructors ${pos===1?'leader':''}">
+        <div class="pos ${posClass}">${pos}</div>
+        <div class="team-bar" style="background:${color}"></div>
+        <div class="driver-info">
+          <div class="driver-name">${team}</div>
+          <div class="driver-team">${con?.nationality || ''} · ${s.wins} wins</div>
+          <div class="pts-bar"><div class="pts-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+        </div>
+        <div>
+          <div class="pts">${s.points}</div>
+          <div class="pts-diff">${ptsFromLeader}</div>
+        </div>
+      </div>`;
+    });
+
+    document.getElementById('constructors-content').innerHTML = header + `<div class="standings-table">${rows.join('')}</div>`;
+    document.getElementById('constructors-updated').textContent = `Updated ${fmtTime(new Date())}`;
+  } catch(e) {
+    document.getElementById('constructors-content').innerHTML =
+      `<div class="error-box"><strong>Standings Unavailable</strong>Could not reach Jolpica API.<br><small style="color:var(--text-muted)">${e.message}</small></div>`;
+  }
+}
+
+// ─────────────────────────────────────────────
+// FETCH ALL
+// ─────────────────────────────────────────────
+async function fetchAll() {
+  await Promise.allSettled([
+    fetchLiveRace(),
+    fetchDriverStandings(),
+    fetchConstructorStandings()
+  ]);
+}
+
+// ─────────────────────────────────────────────
+// POLLING
+// ─────────────────────────────────────────────
+function startPolling() {
+  fetchAll();
+  pollTimer = setInterval(fetchAll, 5000);
+}
+
+// ─────────────────────────────────────────────
+// PWA — visibility change (save battery)
+// ─────────────────────────────────────────────
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    clearInterval(pollTimer);
+  } else {
+    fetchAll();
+    pollTimer = setInterval(fetchAll, 5000);
+  }
+});
+
+// ─────────────────────────────────────────────
+// START
+// ─────────────────────────────────────────────
+startPolling();
+</script>
+</body>
+</html>
