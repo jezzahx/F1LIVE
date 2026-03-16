@@ -1129,7 +1129,271 @@
       .standings-table th, .standings-table td { padding: 10px 6px; font-size: 12px; }
       .hide-mobile { display: none !important; }
       .news-thumb { width: 70px; min-height: 52px; }
+      .live-race-grid { grid-template-columns: 1fr; }
+      .live-map-wrap { height: 260px; }
     }
+
+    /* ── Live Race Tab ── */
+    .live-race-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+      align-items: start;
+    }
+    .live-map-wrap {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 12px;
+      height: 380px;
+      position: relative;
+      overflow: hidden;
+    }
+    .live-map-wrap canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .live-map-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .live-session-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+    .live-session-flag {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #555; flex-shrink: 0;
+    }
+    .live-session-flag.green  { background: #22c55e; box-shadow: 0 0 6px #22c55e88; }
+    .live-session-flag.yellow { background: #facc15; box-shadow: 0 0 6px #facc1588; }
+    .live-session-flag.red    { background: var(--f1-red); box-shadow: 0 0 6px #ef444488; }
+    .live-session-flag.sc     { background: #fb923c; box-shadow: 0 0 6px #fb923c88; }
+    .live-session-name { font-weight: 700; color: var(--text); }
+    .live-session-detail { color: var(--text-muted); font-size: 12px; margin-left: auto; }
+    .live-timing-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .live-timing-table th {
+      text-align: left;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .live-timing-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #ffffff08;
+      white-space: nowrap;
+    }
+    .live-timing-table tr:hover td { background: var(--bg-card2); }
+    .lt-pos { font-weight: 700; color: var(--text); width: 28px; }
+    .lt-driver { font-weight: 600; }
+    .lt-team-bar {
+      display: inline-block;
+      width: 3px; height: 14px;
+      border-radius: 2px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .lt-gap { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .lt-lap  { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .lt-best { color: #22c55e; font-variant-numeric: tabular-nums; }
+    .lt-tyre {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 50%;
+      font-size: 10px; font-weight: 800;
+      background: #333;
+    }
+    .lt-tyre.S { background: #dc2626; color: #fff; }
+    .lt-tyre.M { background: #ca8a04; color: #fff; }
+    .lt-tyre.H { background: #d1d5db; color: #111; }
+    .lt-tyre.I { background: #2563eb; color: #fff; }
+    .lt-tyre.W { background: #0ea5e9; color: #fff; }
+    .lt-pit { color: #f97316; font-size: 10px; font-weight: 700; }
+    .rcm-list {
+      margin-top: 14px;
+    }
+    .rcm-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--bg-card);
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .rcm-icon { font-size: 16px; flex-shrink: 0; }
+    .rcm-time { color: var(--text-muted); font-size: 10px; white-space: nowrap; flex-shrink: 0; }
+    .rcm-msg  { color: var(--text); flex: 1; }
+    .rcm-item.sc    { border-left: 3px solid #fb923c; }
+    .rcm-item.vsc   { border-left: 3px solid #facc15; }
+    .rcm-item.red   { border-left: 3px solid var(--f1-red); }
+    .rcm-item.clear { border-left: 3px solid #22c55e; }
+    .rcm-item.other { border-left: 3px solid #555; }
+    .live-right-panel { display: flex; flex-direction: column; gap: 14px; }
+    .live-panel-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .live-panel-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .live-idle {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .live-idle-icon { font-size: 48px; margin-bottom: 12px; }
+    .live-idle h3 { color: var(--text); font-size: 16px; margin-bottom: 6px; }
+    .live-poll-info {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: 6px;
+    }
+    .weather-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .weather-item {
+      background: var(--bg-card2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+    .weather-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .weather-value { font-weight: 700; color: var(--text); font-size: 15px; margin-top: 2px; }
+
+    /* ── Flag / status banner ── */
+    .flag-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      background: var(--bg-card);
+      border: 1px solid transparent;
+      transition: background 0.4s, border-color 0.4s;
+    }
+    .flag-banner.green  { background: #052e1a; border-color: #22c55e44; color: #22c55e; }
+    .flag-banner.sc     { background: #2d1500; border-color: #fb923c66; color: #fb923c; }
+    .flag-banner.vsc    { background: #2d2500; border-color: #facc1566; color: #facc15; }
+    .flag-banner.red    { background: #2d0a0a; border-color: #ef444466; color: #ef4444; }
+    .flag-banner.yellow { background: #2d2300; border-color: #facc1544; color: #facc15; }
+    .flag-banner.chequered { background: #111; border-color: #ffffff33; color: #fff; }
+    .flag-icon { font-size: 22px; }
+    .flag-detail { font-size: 12px; font-weight: 400; color: var(--text-muted); margin-left: auto; }
+
+    /* ── Live telemetry columns ── */
+    .lt-speed { font-variant-numeric: tabular-nums; color: var(--text); }
+    .lt-gear  {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 4px;
+      background: #2a2a3a; font-weight: 800; font-size: 12px; color: var(--text);
+    }
+    .lt-gear.high { background: #1e3a1e; color: #22c55e; }
+    .lt-gear.low  { background: #2d1010; color: #ef4444; }
+    .lt-drs { font-size: 10px; color: #22c55e; font-weight: 700; letter-spacing: 0.3px; }
+
+    /* ── Team Radio ── */
+    .radio-list { display: flex; flex-direction: column; gap: 8px; }
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-card2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      border-left: 3px solid transparent;
+    }
+    .radio-driver-bar {
+      width: 3px; height: 32px; border-radius: 2px; flex-shrink: 0;
+    }
+    .radio-info { flex: 1; min-width: 0; }
+    .radio-driver { font-weight: 700; font-size: 12px; color: var(--text); }
+    .radio-time   { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+    .radio-play {
+      flex-shrink: 0;
+      background: var(--f1-red);
+      border: none;
+      border-radius: 50%;
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .radio-play:hover  { background: #cc0000; transform: scale(1.1); }
+    .radio-play:active { transform: scale(0.95); }
+    .radio-play.playing { background: #fb923c; }
+    .radio-no-audio { font-size: 10px; color: var(--text-dim); }
+
+    /* ── Full-width bottom row ── */
+    .live-bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 700px) {
+      .live-bottom-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Best Lap / Sector table ── */
+    .best-lap-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .best-lap-table th {
+      text-align: left;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .best-lap-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #ffffff08;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .best-lap-table tr:hover td { background: var(--bg-card2); }
+    .blt-fastest  { color: #b947f5; font-weight: 700; }
+    .blt-fast     { color: #22c55e; }
+    .blt-normal   { color: var(--text-muted); }
+    .blt-empty    { color: var(--text-dim); }
+    .blt-lap-rank { font-size: 10px; color: var(--text-dim); margin-left: 3px; }
   </style>
 </head>
 <body>
@@ -1169,16 +1433,16 @@
     <span class="tab-icon">🔧</span>Constructors
   </div>
   <div class="tab" onclick="switchTab('provisional')" id="tab-provisional">
-    <span class="tab-icon">⚡</span>Provisional
+    <span class="tab-icon">⚡</span>Live Table
   </div>
   <div class="tab" onclick="switchTab('track')" id="tab-track">
     <span class="tab-icon">⏱</span>Track Times
   </div>
+  <div class="tab" onclick="switchTab('live')" id="tab-live">
+    <span class="tab-icon">🔴</span>Live
+  </div>
   <div class="tab" onclick="switchTab('news')" id="tab-news">
     <span class="tab-icon">📰</span>News
-  </div>
-  <div class="tab" onclick="switchTab('components')" id="tab-components">
-    <span class="tab-icon">⚙️</span>Components
   </div>
 </div>
 
@@ -1212,15 +1476,17 @@
     <div id="track-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading track times…</p></div></div>
   </div>
 
+  <!-- LIVE RACE TAB -->
+  <div class="tab-panel" id="panel-live">
+    <div id="live-content"><div class="spinner-wrap"><div class="spinner"></div><p>Checking for live session…</p></div></div>
+  </div>
+
   <!-- NEWS TAB -->
   <div class="tab-panel" id="panel-news">
     <div id="news-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading news…</p></div></div>
   </div>
 
   <!-- COMPONENTS TAB -->
-  <div class="tab-panel" id="panel-components">
-    <div id="components-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading component data…</p></div></div>
-  </div>
 
 
 </div>
@@ -1354,7 +1620,7 @@ let latestCompletedRound = null; // highest round whose race is in the past
 
 let trackTimesLoaded   = false;
 let newsLoaded         = false;
-let componentsLoaded   = false;
+let liveRaceLoaded     = false;
 
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1370,11 +1636,11 @@ function switchTab(tab) {
     newsLoaded = true;
     loadNews().catch(e => setError('news-content', e.message));
   }
-  if (tab === 'components' && !componentsLoaded) {
-    componentsLoaded = true;
-    loadComponents().catch(e => setError('components-content', e.message));
+  if (tab === 'live') {
+    startLiveRaceMode();
+  } else {
+    stopLiveRaceMode();
   }
-
 }
 
 // ════════════════════════════════════════════════
@@ -2396,8 +2662,8 @@ async function loadTrackTimes() {
     fetchJSON(`${JOLPICA_BASE}/current.json`),
     fetchJSON(`${JOLPICA_BASE}/current/fastest/1/results.json?limit=30`),
     fetchJSON(`${JOLPICA_BASE}/${prevYear}/fastest/1/results.json?limit=30`),
-    fetchJSON(`${JOLPICA_BASE}/current/qualifying.json?limit=30`),
-    fetchJSON(`${JOLPICA_BASE}/${prevYear}/qualifying.json?limit=30`),
+    fetchJSON(`${JOLPICA_BASE}/current/qualifying.json?limit=500`),
+    fetchJSON(`${JOLPICA_BASE}/${prevYear}/qualifying.json?limit=500`),
   ]);
 
   const races = schedule?.MRData?.RaceTable?.Races || [];
@@ -2423,11 +2689,16 @@ async function loadTrackTimes() {
   }
 
   // Build qualifying pole lookup: circuitId → { time, driver, team, conId }
+  // NOTE: Jolpica returns qualifying data under QualifyingTable, not RaceTable
   function buildPoleLookup(data) {
     const map = {};
-    for (const race of data?.MRData?.RaceTable?.Races || []) {
+    const races = data?.MRData?.QualifyingTable?.Races
+               || data?.MRData?.RaceTable?.Races   // fallback for API variants
+               || [];
+    for (const race of races) {
       const cId = race.Circuit?.circuitId;
-      const p1  = (race.QualifyingResults || []).find(r => r.position === '1');
+      const p1  = (race.QualifyingResults || [])
+                    .find(r => r.position === '1' || r.position === 1);
       if (cId && p1) {
         map[cId] = {
           time:   p1.Q3 || p1.Q2 || p1.Q1 || '—',
@@ -2440,10 +2711,48 @@ async function loadTrackTimes() {
     return map;
   }
 
+  // Static fallback for 2025 pole times — used when API data is missing for a circuit.
+  // All times sourced from official F1 qualifying results.
+  const POLE_2025_FALLBACK = {
+    'albert_park':   { time: '1:15.096', driver: 'L. Norris',      team: 'McLaren',  conId: 'mclaren'   },
+    'shanghai':      { time: '1:30.641', driver: 'O. Piastri',     team: 'McLaren',  conId: 'mclaren'   },
+    'suzuka':        { time: '1:26.983', driver: 'M. Verstappen',  team: 'Red Bull', conId: 'red_bull'  },
+    'bahrain':       { time: '1:29.841', driver: 'O. Piastri',     team: 'McLaren',  conId: 'mclaren'   },
+    'jeddah':        { time: '1:27.294', driver: 'M. Verstappen',  team: 'Red Bull', conId: 'red_bull'  },
+    'miami':         { time: '1:26.204', driver: 'M. Verstappen',  team: 'Red Bull', conId: 'red_bull'  },
+    'imola':         { time: '1:14.670', driver: 'O. Piastri',     team: 'McLaren',  conId: 'mclaren'   },
+    'monaco':        { time: '1:09.954', driver: 'L. Norris',      team: 'McLaren',  conId: 'mclaren'   },
+    'catalunya':     { time: '1:11.546', driver: 'O. Piastri',     team: 'McLaren',  conId: 'mclaren'   },
+    'villeneuve':    { time: '1:10.899', driver: 'G. Russell',     team: 'Mercedes', conId: 'mercedes'  },
+    'red_bull_ring': { time: '1:03.971', driver: 'L. Norris',      team: 'McLaren',  conId: 'mclaren'   },
+    'silverstone':   { time: '1:24.892', driver: 'M. Verstappen',  team: 'Red Bull', conId: 'red_bull'  },
+    'hungaroring':   { time: '1:15.372', driver: 'C. Leclerc',     team: 'Ferrari',  conId: 'ferrari'   },
+    'spa':           { time: '1:40.562', driver: 'L. Norris',      team: 'McLaren',  conId: 'mclaren'   },
+    'zandvoort':     { time: '1:08.662', driver: 'O. Piastri',     team: 'McLaren',  conId: 'mclaren'   },
+    'monza':         { time: '1:18.792', driver: 'M. Verstappen',  team: 'Red Bull', conId: 'red_bull'  },
+    'baku':          { time: '1:41.117', driver: 'M. Verstappen',  team: 'Red Bull', conId: 'red_bull'  },
+    'marina_bay':    { time: '1:29.158', driver: 'G. Russell',     team: 'Mercedes', conId: 'mercedes'  },
+    'americas':      { time: '1:32.510', driver: 'M. Verstappen',  team: 'Red Bull', conId: 'red_bull'  },
+    'rodriguez':     { time: '1:15.586', driver: 'L. Norris',      team: 'McLaren',  conId: 'mclaren'   },
+    'interlagos':    { time: '1:09.511', driver: 'L. Norris',      team: 'McLaren',  conId: 'mclaren'   },
+    'las_vegas':     { time: '1:47.934', driver: 'L. Norris',      team: 'McLaren',  conId: 'mclaren'   },
+    'losail':        { time: '1:19.387', driver: 'O. Piastri',     team: 'McLaren',  conId: 'mclaren'   },
+    'yas_marina':    { time: '1:22.207', driver: 'M. Verstappen',  team: 'Red Bull', conId: 'red_bull'  },
+  };
+
+  // Merge fallback into a pole lookup map — API data takes precedence
+  function applyPoleFallback(map, fallback) {
+    for (const [cId, entry] of Object.entries(fallback)) {
+      if (!map[cId]) map[cId] = entry;
+    }
+    return map;
+  }
+
   renderTrackTimes(
     races,
     buildFLLookup(flCurr),   buildFLLookup(flPrev),
-    buildPoleLookup(qualiCurr), buildPoleLookup(qualiPrev),
+    applyPoleFallback(buildPoleLookup(qualiCurr), POLE_2025_FALLBACK),
+    buildPoleLookup(qualiPrev),
     currYear, prevYear
   );
 }
@@ -2459,7 +2768,7 @@ function abbrevName(driver) {
 function renderTrackTimes(races, flCurr, flPrev, poleCurr, polePrev, currYear, prevYear) {
   const today = new Date();
 
-  function timeBlock(entry, done, isNewCircuit) {
+  function timeBlock(entry, done, isNewCircuit, eventDate) {
     if (isNewCircuit) {
       return `<div class="track-time pending">New circuit in ${currYear}</div>`;
     }
@@ -2467,6 +2776,11 @@ function renderTrackTimes(races, flCurr, flPrev, poleCurr, polePrev, currYear, p
       return `<div class="track-time pending">Upcoming <span class="track-upcoming-tag">scheduled</span></div>`;
     }
     if (!entry) {
+      // If the event was within the last 4 days, data just hasn't landed in the API yet
+      const hoursAgo = eventDate ? (today - eventDate) / 3600000 : 999;
+      if (hoursAgo < 96) {
+        return `<div class="track-time pending">Data pending <span class="track-upcoming-tag">recent</span></div>`;
+      }
       return `<div class="track-time pending">No data</div>`;
     }
     const color = teamColor(entry.conId);
@@ -2542,11 +2856,11 @@ function renderTrackTimes(races, flCurr, flPrev, poleCurr, polePrev, currYear, p
             </div>
             <div class="track-stat">
               <div class="track-stat-label">🏆 Qualifying Pole</div>
-              ${timeBlock(currPole, qualiDone, false)}
+              ${timeBlock(currPole, qualiDone, false, qualiDate)}
             </div>
             <div class="track-stat">
               <div class="track-stat-label">⚡ Fastest Race Lap</div>
-              ${timeBlock(currFL, raceDone, false)}
+              ${timeBlock(currFL, raceDone, false, raceDate)}
             </div>
           </div>
 
@@ -2597,6 +2911,12 @@ async function loadAll() {
   // Load race first (sets liveSessionData / livePositions globals),
   // then load all standings in parallel (provisional needs those globals)
   await loadLiveRace().catch(e => { setError('race-content', e.message); });
+
+  // Kick off news in the background immediately (no await — fire and forget)
+  if (!newsLoaded) {
+    newsLoaded = true;
+    loadNews().catch(e => setError('news-content', e.message));
+  }
 
   const results = await Promise.allSettled([
     loadDriverStandings().catch(e => { setError('drivers-content', e.message); throw e; }),
@@ -2771,30 +3091,67 @@ async function fetchViaProxy(url) {
   throw new Error('CORS proxy unavailable — check your internet connection');
 }
 
-// Parse standard RSS 2.0 XML into an array of item objects
+// Parse RSS 2.0 or Atom 1.0 XML into an array of item objects
 function parseRSSItems(xmlStr) {
+  // Guard: if the proxy returned HTML instead of a feed, fail fast
+  const trimmed = xmlStr.trimStart();
+  if (trimmed.startsWith('<!') || trimmed.startsWith('<html') || trimmed.startsWith('<HTML')) {
+    throw new Error('Feed returned an HTML page (proxy redirect or bot-check)');
+  }
+
   const parser = new DOMParser();
   const doc = parser.parseFromString(xmlStr, 'text/xml');
-  if (doc.querySelector('parsererror')) throw new Error('Invalid RSS XML');
-  const items = [];
-  for (const el of doc.querySelectorAll('item')) {
-    // <link> in RSS is a text node, not an attribute
-    const linkNode = el.querySelector('link');
-    const link = linkNode?.textContent?.trim()
-              || linkNode?.nextSibling?.textContent?.trim()
-              || linkNode?.getAttribute('href') || '';
-    const description = el.querySelector('description')?.textContent?.trim() || '';
+  if (doc.querySelector('parsererror')) {
+    // Try re-parsing as HTML to at least get something, otherwise throw
+    throw new Error('Invalid feed XML');
+  }
+
+  const mediaNS = 'http://search.yahoo.com/mrss/';
+  const items   = [];
+
+  // ── Atom 1.0: root <feed>, items are <entry> ──
+  const isAtom = !!doc.querySelector('feed');
+  const nodes  = isAtom
+    ? doc.querySelectorAll('entry')
+    : doc.querySelectorAll('item');
+
+  for (const el of nodes) {
+    let link = '';
+    if (isAtom) {
+      // Atom: <link href="..." rel="alternate"> or first <link>
+      const linkEl = el.querySelector('link[rel="alternate"]') || el.querySelector('link');
+      link = linkEl?.getAttribute('href') || '';
+    } else {
+      // RSS 2.0: <link> is a text node (not an attribute)
+      const linkNode = el.querySelector('link');
+      link = linkNode?.textContent?.trim()
+          || linkNode?.nextSibling?.textContent?.trim()
+          || linkNode?.getAttribute('href') || '';
+    }
+
+    // Description / summary / content
+    const description = el.querySelector('description')?.textContent?.trim()
+                     || el.querySelector('summary')?.textContent?.trim()
+                     || el.querySelector('content')?.textContent?.trim()
+                     || '';
+
+    // Date: pubDate (RSS) or published/updated (Atom)
+    const pubDate = el.querySelector('pubDate')?.textContent?.trim()
+                 || el.querySelector('published')?.textContent?.trim()
+                 || el.querySelector('updated')?.textContent?.trim()
+                 || '';
+
     // Thumbnail: media:content, media:thumbnail, or enclosure
-    const mediaNS = 'http://search.yahoo.com/mrss/';
-    const mediaEl = el.getElementsByTagNameNS(mediaNS, 'content')[0]
-                 || el.getElementsByTagNameNS(mediaNS, 'thumbnail')[0];
+    const mediaEl  = el.getElementsByTagNameNS(mediaNS, 'content')[0]
+                  || el.getElementsByTagNameNS(mediaNS, 'thumbnail')[0];
     const enclosure = el.querySelector('enclosure');
-    const thumbnail = mediaEl?.getAttribute('url') || enclosure?.getAttribute('url') || '';
+    const thumbnail  = mediaEl?.getAttribute('url') || enclosure?.getAttribute('url') || '';
+
     items.push({
-      title:       el.querySelector('title')?.textContent?.trim() || '',
+      title:   el.querySelector('title')?.textContent?.trim() || '',
       link,
       description,
-      pubDate:     el.querySelector('pubDate')?.textContent?.trim() || '',
+      pubDate,
       thumbnail,
     });
   }
@@ -2806,7 +3163,6 @@ function parseRSSItems(xmlStr) {
 const NEWS_SOURCES = [
   { id: 'bbc',        label: 'BBC Sport',  url: 'https://feeds.bbci.co.uk/sport/formula1/rss.xml'  },
   { id: 'autosport',  label: 'Autosport',  url: 'https://www.autosport.com/rss/f1/news/'           },
-  { id: 'racefans',   label: 'RaceFans',   url: 'https://www.racefans.net/feed/'                   },
   { id: 'motorsport', label: 'Motorsport', url: 'https://www.motorsport.com/rss/f1/news/'          },
 ];
 
@@ -2899,186 +3255,664 @@ function timeAgo(date) {
   return `${Math.floor(sec / 86400)}d ago`;
 }
 
+
 // ════════════════════════════════════════════════
-//  COMPONENTS TAB
+//  LIVE RACE MODE  (OpenF1 API)
 // ════════════════════════════════════════════════
 
-// 2026 F1 Power Unit regulations (MGU-H removed).
-// Standard limit + 1 extra allowed for 2026 transition year only:
-//   ICE / TC:        3 base + 1 extra = 4 in 2026, back to 3 from 2027
-//   MGU-K / ES / CE: 2 base + 1 extra = 3 in 2026, back to 2 from 2027
-//   Exhaust: 4 in 2026 (reduced from 8), then 3 from 2027
-const PU_COMPONENTS = [
-  { code: 'ICE',   name: 'Internal Combustion Engine',              limit: 4, note: 'base 3 +1 · ↓3 from 2027' },
-  { code: 'TC',    name: 'Turbocharger',                            limit: 4, note: 'base 3 +1 · ↓3 from 2027' },
-  { code: 'MGU-K', name: 'Motor Generator Unit – Kinetic (350 kW)', limit: 3, note: 'base 2 +1 · ↓2 from 2027' },
-  { code: 'ES',    name: 'Energy Store / Battery',                  limit: 3, note: 'base 2 +1 · ↓2 from 2027' },
-  { code: 'CE',    name: 'Control Electronics',                     limit: 3, note: 'base 2 +1 · ↓2 from 2027' },
-  { code: 'EXH',   name: 'Exhaust System',                          limit: 4, note: '↓3 from 2027' },
-];
+const OPENF1 = 'https://api.openf1.org/v1';
 
-async function loadComponents() {
-  // Fetch race results, qualifying results, and driver standings in parallel
-  const [racesData, qualData, driverStandData] = await Promise.all([
-    fetchJSON(`${JOLPICA_BASE}/current/results.json?limit=500`),
-    fetchJSON(`${JOLPICA_BASE}/current/qualifying.json?limit=500`),
-    fetchJSON(`${JOLPICA_BASE}/current/driverstandings.json`),
-  ]);
+// Team colours reused from existing TEAM_COLORS map
+function teamColour(teamName) {
+  if (!teamName) return '#888';
+  const k = teamName.toLowerCase().replace(/\s+/g, '_');
+  for (const [key, val] of Object.entries(TEAM_COLORS)) {
+    if (k.includes(key) || key.includes(k)) return val;
+  }
+  return '#888';
+}
 
-  const races          = racesData?.MRData?.RaceTable?.Races || [];
-  const qualRaces      = qualData?.MRData?.RaceTable?.Races  || [];
-  const driverStandings = driverStandData?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings || [];
+let _liveTimer      = null;   // polling interval
+let _trackPoints    = null;   // cached circuit outline points [{x,y}]
+let _liveSessionKey = null;   // track which session the map belongs to
+let _liveCanvas     = null;   // canvas element ref
 
-  // Build qualifying position lookup: `${round}_${driverId}` → position
-  const qualPos = {};
-  for (const qr of qualRaces) {
-    for (const qRes of qr.QualifyingResults || []) {
-      qualPos[`${qr.round}_${qRes.Driver?.driverId}`] = parseInt(qRes.position);
+function stopLiveRaceMode() {
+  if (_liveTimer) { clearInterval(_liveTimer); _liveTimer = null; }
+}
+
+async function startLiveRaceMode() {
+  stopLiveRaceMode();
+  await renderLiveRace();
+  _liveTimer = setInterval(renderLiveRace, 5000);
+}
+
+async function renderLiveRace() {
+  // 1. Get the most recent session
+  let sessions;
+  try {
+    sessions = await fetchJSON(`${OPENF1}/sessions?year=${new Date().getFullYear()}`);
+  } catch (_) { return; }
+
+  if (!sessions || !sessions.length) {
+    showLiveIdle('No sessions found for this season yet.');
+    return;
+  }
+
+  const now = new Date();
+
+  // Prefer a session that is currently live, otherwise the most recent past session
+  const liveSession = sessions.find(s =>
+    now >= new Date(s.date_start) && now <= new Date(s.date_end)
+  );
+  const pastSessions = sessions
+    .filter(s => new Date(s.date_start) <= now)
+    .sort((a, b) => new Date(b.date_start) - new Date(a.date_start));
+
+  const session = liveSession || pastSessions[0];
+
+  if (!session) {
+    showLiveIdle('Season not started yet — check back on race weekend.');
+    return;
+  }
+
+  const start  = new Date(session.date_start);
+  const end    = new Date(session.date_end);
+  const isLive = now >= start && now <= end;
+  const sk        = session.session_key;
+
+  // 2. Fetch live data in parallel
+  // For car_data we only need the last ~15 seconds to get current telemetry
+  const recentISO = new Date(Date.now() - 15000).toISOString();
+  const [posData, rcmData, intervalsData, weatherData, lapData, driversData, carData, radioData] =
+    await Promise.all([
+      fetchJSON(`${OPENF1}/position?session_key=${sk}`).catch(() => []),
+      fetchJSON(`${OPENF1}/race_control_messages?session_key=${sk}`).catch(() => []),
+      fetchJSON(`${OPENF1}/intervals?session_key=${sk}`).catch(() => []),
+      fetchJSON(`${OPENF1}/weather?session_key=${sk}`).catch(() => []),
+      fetchJSON(`${OPENF1}/laps?session_key=${sk}`).catch(() => []),
+      fetchJSON(`${OPENF1}/drivers?session_key=${sk}`).catch(() => []),
+      fetchJSON(`${OPENF1}/car_data?session_key=${sk}&date>${recentISO}`).catch(() => []),
+      fetchJSON(`${OPENF1}/team_radio?session_key=${sk}`).catch(() => []),
+    ]);
+
+  // 3. Process latest position per driver
+  const latestPos = {};
+  for (const p of (posData || [])) {
+    if (!latestPos[p.driver_number] ||
+        new Date(p.date) > new Date(latestPos[p.driver_number].date)) {
+      latestPos[p.driver_number] = p;
     }
   }
 
-  // Gather grid penalty events per driver (≥5 place grid drop vs qualifying)
-  const penaltiesByDriver = {};
-  for (const race of races) {
-    for (const result of race.Results || []) {
-      const dId  = result.Driver?.driverId;
-      const grid = parseInt(result.grid);
-      const qp   = qualPos[`${race.round}_${dId}`];
-      if (!qp || !grid || grid <= 0) continue;
-      const drop = grid - qp;
-      if (drop >= 5) {
-        if (!penaltiesByDriver[dId]) {
-          penaltiesByDriver[dId] = { events: [] };
-        }
-        penaltiesByDriver[dId].events.push({
-          race:    race.raceName.replace(' Grand Prix', ' GP'),
-          round:   parseInt(race.round),
-          qualPos: qp,
-          gridPos: grid,
-          drop,
-        });
-      }
+  // 4. Track outline — accumulate all unique position points to draw the circuit
+  // Bust cached track outline if we've moved to a different session/circuit
+  if (sk !== _liveSessionKey) {
+    _trackPoints    = null;
+    _liveSessionKey = sk;
+  }
+  if (posData && posData.length > 100 && !_trackPoints) {
+    const step = Math.max(1, Math.floor(posData.length / 800));
+    _trackPoints = posData
+      .filter((_, i) => i % step === 0)
+      .map(p => ({ x: p.x, y: p.y }))
+      .filter(p => p.x != null && p.y != null);
+  }
+
+  // 5. Latest interval per driver
+  const latestInt = {};
+  for (const iv of (intervalsData || [])) {
+    if (!latestInt[iv.driver_number] ||
+        new Date(iv.date) > new Date(latestInt[iv.driver_number].date)) {
+      latestInt[iv.driver_number] = iv;
     }
   }
 
-  // ── Allocation limits card ──────────────────────────────────
-  const limitsHtml = PU_COMPONENTS.map(c => {
-    const dots = Array.from({ length: c.limit }, () =>
-      `<span class="comp-dot avail"></span>`).join('');
+  // 6. Latest lap per driver
+  const latestLap = {};
+  for (const lap of (lapData || [])) {
+    if (!latestLap[lap.driver_number] ||
+        lap.lap_number > (latestLap[lap.driver_number].lap_number || 0)) {
+      latestLap[lap.driver_number] = lap;
+    }
+  }
+
+  // 7. Latest weather
+  const weather = (weatherData || []).at(-1);
+
+  // 8. Latest car telemetry per driver (speed, gear, DRS from recent window)
+  const latestCar = {};
+  for (const c of (carData || [])) {
+    if (!latestCar[c.driver_number] ||
+        new Date(c.date) > new Date(latestCar[c.driver_number].date)) {
+      latestCar[c.driver_number] = c;
+    }
+  }
+
+  // 9. Build driver list ordered by position
+  const drivers = driversData || [];
+  const driverMap = {};
+  for (const d of drivers) driverMap[d.driver_number] = d;
+
+  // Sort by current interval / position data
+  const posOrder = Object.values(latestPos).sort((a, b) =>
+    (a.position || 99) - (b.position || 99)
+  );
+
+  // 9. Session status
+  const trackStatus = rcmData && rcmData.length
+    ? rcmData[rcmData.length - 1]
+    : null;
+
+  let statusClass = isLive ? 'green' : '';
+  let statusLabel = isLive
+    ? `🟢 Live — ${session.session_name}`
+    : `${session.session_name} · ${new Date(session.date_start).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+
+  if (isLive && rcmData) {
+    const last = [...rcmData].reverse().find(m =>
+      m.flag === 'SAFETY CAR' || m.flag === 'VIRTUAL SAFETY CAR' ||
+      m.flag === 'RED FLAG' || m.flag === 'YELLOW'
+    );
+    if (last) {
+      if (last.flag === 'SAFETY CAR')         { statusClass = 'sc';     statusLabel = '🟠 Safety Car'; }
+      else if (last.flag === 'VIRTUAL SAFETY CAR') { statusClass = 'yellow'; statusLabel = '🟡 Virtual Safety Car'; }
+      else if (last.flag === 'RED FLAG')       { statusClass = 'red';    statusLabel = '🔴 Red Flag'; }
+    }
+  }
+
+  // Get max lap
+  const maxLap = lapData && lapData.length
+    ? Math.max(...lapData.map(l => l.lap_number || 0))
+    : null;
+
+  const totalLaps = session.total_laps || null;
+  const lapStr = (isLive && maxLap)
+    ? (totalLaps ? `Lap ${maxLap} / ${totalLaps}` : `Lap ${maxLap}`)
+    : '';
+
+  // ── Render ────────────────────────────────────
+  const container = document.getElementById('live-content');
+  if (!container) return;
+
+  // Session bar
+  const sessionBarHTML = `
+    <div class="live-session-bar">
+      <div class="live-session-flag ${statusClass}"></div>
+      <div class="live-session-name">${statusLabel}</div>
+      ${lapStr ? `<div class="live-session-detail">${lapStr}</div>` : ''}
+      ${!isLive ? `<div class="live-session-detail" style="margin-left:auto;font-size:11px">Most recent session — not currently live</div>` : ''}
+    </div>`;
+
+  // ── Compute fastest sector times across all drivers (for purple highlight) ──
+  const fastestS = [1, 2, 3].map(n => {
+    const key = `duration_sector_${n}`;
+    const vals = Object.values(latestLap)
+      .map(l => l[key])
+      .filter(v => v != null && v > 0);
+    return vals.length ? Math.min(...vals) : null;
+  });
+
+  // ── Best lap per driver across all laps ──
+  const bestLapByDriver = {};
+  for (const lap of (lapData || [])) {
+    const dn = lap.driver_number;
+    if (!lap.lap_duration) continue;
+    if (!bestLapByDriver[dn] || lap.lap_duration < bestLapByDriver[dn]) {
+      bestLapByDriver[dn] = lap.lap_duration;
+    }
+  }
+  const overallBestLap = Object.values(bestLapByDriver).length
+    ? Math.min(...Object.values(bestLapByDriver))
+    : null;
+
+  // ── Sector colour helper ──
+  function sectorColour(val, fastestOverall) {
+    if (!val || !fastestOverall) return 'color:var(--text-muted)';
+    if (Math.abs(val - fastestOverall) < 0.001) return 'color:#b947f5;font-weight:700';
+    return 'color:#22c55e';
+  }
+
+  // ── Timing tower rows (with speed, gear, DRS, sectors) ──
+  const timingRows = posOrder.map(p => {
+    const d    = driverMap[p.driver_number] || {};
+    const iv   = latestInt[p.driver_number];
+    const lap  = latestLap[p.driver_number];
+    const car  = latestCar[p.driver_number];
+    const col  = teamColour(d.team_name);
+    const abbr = d.name_acronym || `#${p.driver_number}`;
+
+    const gap = iv
+      ? (iv.gap_to_leader != null
+          ? (iv.gap_to_leader === 0
+              ? '<span style="color:var(--f1-red)">LEAD</span>'
+              : `+${Number(iv.gap_to_leader).toFixed(3)}`)
+          : '')
+      : '';
+
+    const lastLapStr = lap?.lap_duration ? formatLapTime(lap.lap_duration) : '–';
+    const compound   = lap?.compound ? lap.compound.charAt(0) : '?';
+
+    const s1 = lap?.duration_sector_1;
+    const s2 = lap?.duration_sector_2;
+    const s3 = lap?.duration_sector_3;
+    const fmtSector = (val, fastest) => val
+      ? `<span style="${sectorColour(val, fastest)}">${val.toFixed(3)}</span>`
+      : `<span style="color:var(--text-dim)">–</span>`;
+
+    // Speed & Gear from car_data
+    const speed   = car?.speed != null ? `${car.speed}` : '–';
+    const gear    = car?.n_gear != null ? car.n_gear : '–';
+    const drs     = car?.drs >= 10;   // DRS open = values 10,12,14
+    const gearCls = (gear !== '–' && gear >= 7) ? 'high' : (gear !== '–' && gear <= 2) ? 'low' : '';
+
+    const inPit = iv?.is_pit_lane_entry === true;
+    const posCell = inPit
+      ? `<td class="lt-pos">${p.position ?? '–'}<br><span class="lt-pit">PIT</span></td>`
+      : `<td class="lt-pos">${p.position ?? '–'}</td>`;
+
+    const isFastestLap = overallBestLap && lap?.lap_duration &&
+      Math.abs(lap.lap_duration - overallBestLap) < 0.001;
+    const rowStyle = isFastestLap ? ' style="background:#b947f508"' : '';
+
     return `
-      <div class="comp-item">
-        <span class="comp-code">${c.code}</span>
-        <span class="comp-name">${c.name}${c.note ? ` <span style="font-size:10px;color:var(--text-dim);margin-left:4px">${c.note}</span>` : ''}</span>
-        <div class="comp-dots">${dots}<span class="comp-num">${c.limit}</span></div>
-      </div>`;
-  }).join('');
-
-  // ── Driver × Component matrix ─────────────────────────────────
-  // Rows = drivers (championship order), Columns = each PU component.
-  // Dot logic per cell:
-  //   • 1 filled green dot  = baseline (every driver who has raced uses ≥ 1 of each)
-  //   • Extra red dot(s)    = inferred from detected grid-penalty events this season
-  //   • Empty dots          = remaining allocation
-  // Note: because we can only detect *that* a penalty happened (not *which* component),
-  // red dots appear across all components for penalty drivers as a conservative flag.
-
-  const racesCompleted = races.length;
-
-  // Column headers — one per component
-  const compHeaders = PU_COMPONENTS.map(c =>
-    `<th style="text-align:center;padding:10px 6px;font-size:10px;white-space:nowrap">
-       ${c.code}<br><span style="color:var(--text-dim);font-weight:400">/${c.limit}</span>
-     </th>`
-  ).join('');
-
-  const driverRows = driverStandings.map(s => {
-    const driver = s.Driver || {};
-    const cons   = s.Constructors?.[0] || {};
-    const color  = teamColor(cons.constructorId || '');
-    const dId    = driver.driverId;
-    const pen    = penaltiesByDriver[dId] || { events: [] };
-    const penCount = pen.events.length;
-    const hasRaced = racesCompleted > 0;
-
-    // Per-component cells
-    const compCells = PU_COMPONENTS.map(c => {
-      // Minimum 1 used once they've raced; +1 per penalty event (conservative across all components)
-      const baseUsed   = hasRaced ? 1 : 0;
-      const totalUsed  = Math.min(baseUsed + penCount, c.limit);
-      const overLimit  = (baseUsed + penCount) > c.limit;
-
-      const dots = Array.from({ length: c.limit }, (_, i) => {
-        if (i < baseUsed)  return `<span class="comp-dot avail" title="Used"></span>`;
-        if (i < totalUsed) return `<span class="comp-dot used"  title="Inferred penalty usage"></span>`;
-        return `<span class="comp-dot empty"></span>`;
-      }).join('');
-
-      const cellBg = overLimit ? 'background:rgba(225,6,0,0.08)' : '';
-      return `<td style="text-align:center;padding:8px 4px;${cellBg}">
-                <div class="comp-dots" style="justify-content:center;gap:3px">${dots}</div>
-                <div style="font-size:9px;color:var(--text-dim);margin-top:3px">${totalUsed}/${c.limit}</div>
-              </td>`;
-    }).join('');
-
-    // Penalty events pill (shown inline after driver name on wide screens)
-    const penPills = pen.events.map(e =>
-      `<span class="comp-pill" title="Qual P${e.qualPos} → Grid P${e.gridPos} (−${e.drop} places)">${e.race}</span>`
-    ).join('');
-
-    const rowHighlight = penCount > 0 ? 'background:rgba(225,6,0,0.04)' : '';
-
-    return `
-      <tr style="${rowHighlight}">
-        <td style="min-width:130px">
-          <div style="display:flex;align-items:center;gap:6px">
-            <div class="team-color-bar" style="background:${color}"></div>
-            <div>
-              <div style="font-size:12px;font-weight:700">${driver.code || driver.familyName}</div>
-              <div style="font-size:10px;color:var(--text-muted)">${cons.name || ''}</div>
-              ${penPills ? `<div style="margin-top:3px">${penPills}</div>` : ''}
-            </div>
-          </div>
+      <tr${rowStyle}>
+        ${posCell}
+        <td class="lt-driver">
+          <span class="lt-team-bar" style="background:${col}"></span>${abbr}
         </td>
-        ${compCells}
+        <td class="lt-gap">${gap}</td>
+        <td class="lt-lap" style="${isFastestLap ? 'color:#b947f5;font-weight:700' : ''}">${lastLapStr}</td>
+        <td class="hide-mobile lt-speed">${speed}<span style="font-size:9px;color:var(--text-muted)"> km/h</span></td>
+        <td class="hide-mobile"><span class="lt-gear ${gearCls}">${gear}</span>${drs ? '<span class="lt-drs"> DRS</span>' : ''}</td>
+        <td class="hide-mobile">${fmtSector(s1, fastestS[0])}</td>
+        <td class="hide-mobile">${fmtSector(s2, fastestS[1])}</td>
+        <td class="hide-mobile">${fmtSector(s3, fastestS[2])}</td>
+        <td><span class="lt-tyre ${compound}">${compound}</span></td>
       </tr>`;
   }).join('');
 
-  document.getElementById('components-content').innerHTML = `
-    <div class="section-header">
-      <span class="section-title">Power Unit Allocation</span>
-      <span class="section-meta">2026 Season · ${racesCompleted} rounds completed</span>
-    </div>
-
-    <div class="comp-matrix-wrap">
-      <table class="comp-matrix-table">
-        <thead>
-          <tr>
-            <th style="text-align:left;padding:10px 8px;font-size:10px;min-width:130px">Driver</th>
-            ${compHeaders}
-          </tr>
-        </thead>
-        <tbody>${driverRows}</tbody>
+  const timingHTML = posOrder.length > 0 ? `
+    <div class="live-panel-card">
+      <div class="live-panel-title">Live Timing
+        <span style="margin-left:8px;font-size:10px;font-weight:400;color:var(--text-muted)">
+          <span style="color:#b947f5">■</span> Fastest &nbsp;
+          <span style="color:#22c55e">■</span> Best sector
+        </span>
+      </div>
+      <div style="overflow-x:auto">
+      <table class="live-timing-table">
+        <thead><tr>
+          <th>P</th><th>Driver</th><th>Gap</th><th>Last Lap</th>
+          <th class="hide-mobile">Speed</th><th class="hide-mobile">Gear</th>
+          <th class="hide-mobile">S1</th><th class="hide-mobile">S2</th><th class="hide-mobile">S3</th>
+          <th>Tyre</th>
+        </tr></thead>
+        <tbody>${timingRows}</tbody>
       </table>
-    </div>
+      </div>
+      <div class="live-poll-info">Refreshes every 5s · OpenF1 (~5–10s delay)</div>
+    </div>` : '';
 
-    <p class="comp-note" style="margin-top:12px">
-      🟢 = baseline usage (1 per component minimum once racing begins) &nbsp;
-      🔴 = inferred extra usage from detected grid penalty events &nbsp; · &nbsp;
-      Penalty events detected by comparing qualifying position vs grid position (≥5 place drops).
-      Hover a round pill to see the exact position drop. Actual component counts require
-      the official F1 Timing app.
-    </p>
+  // ── Flag / status banner ──
+  let flagClass = 'green', flagIcon = '🟢', flagMsg = 'Green Flag — Track Clear';
+  if (rcmData && rcmData.length) {
+    const recent = [...rcmData].reverse().find(m => m.flag && m.flag !== '');
+    if (recent) {
+      const f = (recent.flag || '').toUpperCase();
+      if (f === 'SAFETY CAR')              { flagClass='sc';          flagIcon='🟠'; flagMsg='Safety Car Deployed'; }
+      else if (f === 'VIRTUAL SAFETY CAR') { flagClass='vsc';         flagIcon='🟡'; flagMsg='Virtual Safety Car'; }
+      else if (f === 'RED FLAG')           { flagClass='red';         flagIcon='🔴'; flagMsg='Red Flag — Session Stopped'; }
+      else if (f === 'YELLOW')             { flagClass='yellow';      flagIcon='⚠️'; flagMsg=`Yellow Flag — ${recent.message || ''}`; }
+      else if (f === 'CHEQUERED')          { flagClass='chequered';   flagIcon='🏁'; flagMsg='Chequered Flag'; }
+      else if (f === 'GREEN')              { flagClass='green';       flagIcon='🟢'; flagMsg='Green Flag — Track Clear'; }
+    }
+  }
+  const lastRcmTime = rcmData?.length
+    ? new Date(rcmData[rcmData.length - 1].date).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' })
+    : '';
 
-    <div class="section-header" style="margin-top:24px">
-      <span class="section-title">2026 Component Limits</span>
-      <span class="section-meta">Per driver per season</span>
+  const flagBannerHTML = isLive ? `
+    <div class="flag-banner ${flagClass}">
+      <span class="flag-icon">${flagIcon}</span>
+      <span>${flagMsg}</span>
+      <span class="flag-detail">${lastRcmTime}</span>
+    </div>` : '';
+
+  // ── Race Control Messages ──
+  const rcmItems = [...(rcmData || [])]
+    .reverse()
+    .slice(0, 15)
+    .map(m => {
+      let cls = 'other', icon = 'ℹ️';
+      const flag = (m.flag || '').toUpperCase();
+      const cat  = (m.category || '').toUpperCase();
+      if (flag === 'SAFETY CAR')               { cls = 'sc';    icon = '🟠'; }
+      else if (flag === 'VIRTUAL SAFETY CAR')  { cls = 'vsc';   icon = '🟡'; }
+      else if (flag === 'RED FLAG')            { cls = 'red';   icon = '🔴'; }
+      else if (flag === 'CHEQUERED')           { cls = 'clear'; icon = '🏁'; }
+      else if (flag === 'GREEN')               { cls = 'clear'; icon = '🟢'; }
+      else if (flag === 'YELLOW')              { cls = 'other'; icon = '⚠️'; }
+      else if (cat === 'FLAG' || cat === 'INCIDENT') { icon = '🚩'; }
+      else if (cat === 'DRS')                  { icon = '↕️'; }
+      const t = m.date ? new Date(m.date).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : '';
+      return `<div class="rcm-item ${cls}">
+        <span class="rcm-icon">${icon}</span>
+        <span class="rcm-msg">${m.message || ''}</span>
+        <span class="rcm-time">${t}</span>
+      </div>`;
+    }).join('');
+
+  const rcmHTML = `
+    <div class="live-panel-card">
+      <div class="live-panel-title">Race Control Messages</div>
+      <div class="rcm-list" style="max-height:320px;overflow-y:auto">
+        ${rcmItems || '<p style="color:var(--text-muted);font-size:12px">No messages yet.</p>'}
+      </div>
+    </div>`;
+
+  // ── Team Radio ──
+  let radioHTML = '';
+  if (radioData && radioData.length) {
+    const radioItems = [...radioData]
+      .reverse()
+      .slice(0, 15)
+      .map((r, idx) => {
+        const d   = driverMap[r.driver_number] || {};
+        const col = teamColour(d.team_name);
+        const abbr = d.name_acronym || `#${r.driver_number}`;
+        const name = d.full_name || abbr;
+        const t   = r.date ? new Date(r.date).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : '';
+        const audioId = `radio-audio-${idx}`;
+        const btnId   = `radio-btn-${idx}`;
+        const hasAudio = !!r.recording_url;
+        return `
+          <div class="radio-item">
+            <div class="radio-driver-bar" style="background:${col}"></div>
+            <div class="radio-info">
+              <div class="radio-driver">${abbr} <span style="font-weight:400;color:var(--text-muted)">${name.split(' ').at(-1)}</span></div>
+              <div class="radio-time">${t}</div>
+            </div>
+            ${hasAudio
+              ? `<audio id="${audioId}" src="${r.recording_url}" preload="none"></audio>
+                 <button class="radio-play" id="${btnId}" title="Play team radio"
+                   onclick="(function(){
+                     var a=document.getElementById('${audioId}');
+                     var b=document.getElementById('${btnId}');
+                     if(a.paused){
+                       document.querySelectorAll('.radio-play').forEach(x=>{ x.textContent='▶'; x.classList.remove('playing'); });
+                       document.querySelectorAll('audio').forEach(x=>x.pause());
+                       a.play(); b.textContent='⏸'; b.classList.add('playing');
+                       a.onended=function(){ b.textContent='▶'; b.classList.remove('playing'); };
+                     } else { a.pause(); b.textContent='▶'; b.classList.remove('playing'); }
+                   })()">▶</button>`
+              : `<span class="radio-no-audio">No audio</span>`}
+          </div>`;
+      }).join('');
+
+    radioHTML = `
+      <div class="live-panel-card">
+        <div class="live-panel-title">Team Radio <span style="font-size:10px;font-weight:400;color:var(--text-muted)">(newest first)</span></div>
+        <div class="radio-list" style="max-height:320px;overflow-y:auto">${radioItems}</div>
+      </div>`;
+  }
+
+  // ── Weather ──
+  let weatherHTML = '';
+  if (weather) {
+    weatherHTML = `
+      <div class="live-panel-card">
+        <div class="live-panel-title">Track Conditions</div>
+        <div class="weather-grid">
+          <div class="weather-item"><div class="weather-label">Air Temp</div><div class="weather-value">${weather.air_temperature ?? '–'}°C</div></div>
+          <div class="weather-item"><div class="weather-label">Track Temp</div><div class="weather-value">${weather.track_temperature ?? '–'}°C</div></div>
+          <div class="weather-item"><div class="weather-label">Humidity</div><div class="weather-value">${weather.humidity ?? '–'}%</div></div>
+          <div class="weather-item"><div class="weather-label">Wind Speed</div><div class="weather-value">${weather.wind_speed != null ? weather.wind_speed + ' m/s' : '–'}</div></div>
+          <div class="weather-item"><div class="weather-label">Pressure</div><div class="weather-value">${weather.pressure != null ? Math.round(weather.pressure) + ' mbar' : '–'}</div></div>
+          <div class="weather-item"><div class="weather-label">Rainfall</div><div class="weather-value">${weather.rainfall ? '🌧 Yes' : '☀️ Dry'}</div></div>
+        </div>
+      </div>`;
+  }
+
+  // ── Best Lap / Sector Table ──
+  // Build per-driver best S1, S2, S3, and best overall lap from all lap data
+  const bestByDriver = {};
+  for (const lap of (lapData || [])) {
+    const dn = lap.driver_number;
+    if (!bestByDriver[dn]) bestByDriver[dn] = { s1: null, s2: null, s3: null, lap: null, compound: null };
+    const b = bestByDriver[dn];
+    if (lap.duration_sector_1 > 0 && (b.s1 === null || lap.duration_sector_1 < b.s1)) b.s1 = lap.duration_sector_1;
+    if (lap.duration_sector_2 > 0 && (b.s2 === null || lap.duration_sector_2 < b.s2)) b.s2 = lap.duration_sector_2;
+    if (lap.duration_sector_3 > 0 && (b.s3 === null || lap.duration_sector_3 < b.s3)) b.s3 = lap.duration_sector_3;
+    if (lap.lap_duration > 0 && (b.lap === null || lap.lap_duration < b.lap)) b.lap = lap.lap_duration;
+    // Track most recent compound
+    if (lap.compound) b.compound = lap.compound;
+  }
+  // Also pull compound from latestLap if bestByDriver entry exists
+  for (const [dn, b] of Object.entries(bestByDriver)) {
+    if (latestLap[dn]?.compound) b.compound = latestLap[dn].compound;
+  }
+
+  // Overall fastest values across all drivers (for colouring)
+  const allS1   = Object.values(bestByDriver).map(b => b.s1).filter(Boolean);
+  const allS2   = Object.values(bestByDriver).map(b => b.s2).filter(Boolean);
+  const allS3   = Object.values(bestByDriver).map(b => b.s3).filter(Boolean);
+  const allLaps = Object.values(bestByDriver).map(b => b.lap).filter(Boolean);
+  const fastS1  = allS1.length   ? Math.min(...allS1)   : null;
+  const fastS2  = allS2.length   ? Math.min(...allS2)   : null;
+  const fastS3  = allS3.length   ? Math.min(...allS3)   : null;
+  const fastLap = allLaps.length ? Math.min(...allLaps) : null;
+
+  function sectorClass(val, fastest) {
+    if (!val || !fastest) return 'blt-empty';
+    if (Math.abs(val - fastest) < 0.001) return 'blt-fastest';
+    if (val < fastest * 1.005) return 'blt-fast';   // within 0.5% = green
+    return 'blt-normal';
+  }
+  function fmtS(val) { return val ? val.toFixed(3) : '–'; }
+
+  // Sort by best lap time (nulls last)
+  const bestLapDrivers = Object.keys(bestByDriver)
+    .map(dn => ({ dn: parseInt(dn), ...bestByDriver[dn] }))
+    .sort((a, b) => {
+      if (!a.lap && !b.lap) return 0;
+      if (!a.lap) return 1;
+      if (!b.lap) return -1;
+      return a.lap - b.lap;
+    });
+
+  let bestLapHTML = '';
+  if (bestLapDrivers.length > 0) {
+    const rows = bestLapDrivers.map((b, idx) => {
+      const d    = driverMap[b.dn] || {};
+      const col  = teamColour(d.team_name);
+      const abbr = d.name_acronym || `#${b.dn}`;
+      const compound  = b.compound ? b.compound.charAt(0) : '?';
+      const lapCls    = sectorClass(b.lap, fastLap);
+      const gapToFast = (b.lap && fastLap && b.lap !== fastLap)
+        ? `+${(b.lap - fastLap).toFixed(3)}`
+        : '';
+      return `
+        <tr>
+          <td style="color:var(--text-muted);width:24px">${idx + 1}</td>
+          <td>
+            <span class="lt-team-bar" style="background:${col};display:inline-block;width:3px;height:14px;border-radius:2px;margin-right:6px;vertical-align:middle"></span>
+            <span style="font-weight:600">${abbr}</span>
+            <span style="color:var(--text-muted);font-size:10px;margin-left:4px">${d.full_name ? d.full_name.split(' ').at(-1) : ''}</span>
+          </td>
+          <td class="${sectorClass(b.s1, fastS1)}">${fmtS(b.s1)}</td>
+          <td class="${sectorClass(b.s2, fastS2)}">${fmtS(b.s2)}</td>
+          <td class="${sectorClass(b.s3, fastS3)}">${fmtS(b.s3)}</td>
+          <td class="${lapCls}" style="font-weight:${lapCls==='blt-fastest'?'700':'400'}">
+            ${b.lap ? formatLapTime(b.lap) : '–'}
+            ${gapToFast ? `<span class="blt-lap-rank">${gapToFast}</span>` : ''}
+          </td>
+          <td><span class="lt-tyre ${compound}">${compound}</span></td>
+        </tr>`;
+    }).join('');
+
+    bestLapHTML = `
+      <div class="live-panel-card" style="margin-top:16px">
+        <div class="live-panel-title">Best Laps &amp; Sectors
+          <span style="margin-left:8px;font-size:10px;font-weight:400;color:var(--text-muted)">
+            <span style="color:#b947f5">■</span> Overall fastest &nbsp;
+            <span style="color:#22c55e">■</span> Within 0.5%
+          </span>
+        </div>
+        <div style="overflow-x:auto">
+        <table class="best-lap-table">
+          <thead><tr>
+            <th></th><th>Driver</th><th>Best S1</th><th>Best S2</th><th>Best S3</th><th>Best Lap</th><th>Tyre</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        </div>
+      </div>`;
+  }
+
+  // ── Layout ──
+  const hasMapData = _trackPoints && _trackPoints.length > 10 && posOrder.length > 0;
+  const mapHTML = `
+    <div>
+      <div class="live-map-label">Track Map · ${session.circuit_short_name || session.location || ''}</div>
+      <div class="live-map-wrap">
+        <canvas id="live-map-canvas"></canvas>
+        ${!hasMapData
+          ? `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px;text-align:center;padding:20px">Track map appears<br>once position data is available</div>`
+          : ''}
+      </div>
+    </div>`;
+
+  container.innerHTML = sessionBarHTML + flagBannerHTML + `
+    <div class="live-race-grid">
+      ${mapHTML}
+      <div class="live-right-panel">
+        ${timingHTML}
+      </div>
     </div>
-    <div class="comp-limits-grid">${limitsHtml}</div>
-    <p class="comp-note">
-      2026 regulations: MGU-H removed. ICE &amp; TC capped at 4 (base 3 + 1 transitional).
-      MGU-K, ES &amp; CE capped at 3 (base 2 + 1 transitional). All limits reduce from 2027.
-      Exceeding allocation: 10-place grid penalty for 1st extra unit, 5 places for each subsequent.
-    </p>`;
+    ${bestLapHTML}
+    <div class="live-bottom-grid">
+      <div>${rcmHTML}${weatherHTML}</div>
+      <div>${radioHTML}</div>
+    </div>`;
+
+  // Draw canvas map
+  drawTrackMap(posOrder, driverMap);
+}
+
+function drawTrackMap(posOrder, driverMap) {
+  const canvas = document.getElementById('live-map-canvas');
+  if (!canvas) return;
+
+  const wrap   = canvas.parentElement;
+  canvas.width  = wrap.clientWidth  || 400;
+  canvas.height = wrap.clientHeight || 360;
+  const ctx    = canvas.getContext('2d');
+  const W      = canvas.width;
+  const H      = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const allPoints = [
+    ...(_trackPoints || []),
+    ...posOrder.map(p => ({ x: p.x, y: p.y })).filter(p => p.x != null),
+  ];
+
+  if (allPoints.length < 10) return;
+
+  // Compute bounds
+  const xs = allPoints.map(p => p.x);
+  const ys = allPoints.map(p => p.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const pad  = 30;
+
+  const scaleX = (W - pad * 2) / (maxX - minX || 1);
+  const scaleY = (H - pad * 2) / (maxY - minY || 1);
+  const scale  = Math.min(scaleX, scaleY);
+
+  const offX = pad + ((W - pad * 2) - (maxX - minX) * scale) / 2;
+  const offY = pad + ((H - pad * 2) - (maxY - minY) * scale) / 2;
+
+  function toCanvas(x, y) {
+    return [offX + (x - minX) * scale, H - (offY + (y - minY) * scale)];
+  }
+
+  // Draw track outline
+  if (_trackPoints && _trackPoints.length > 10) {
+    ctx.beginPath();
+    ctx.strokeStyle = '#3a3a4a';
+    ctx.lineWidth   = 8;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    const [sx, sy] = toCanvas(_trackPoints[0].x, _trackPoints[0].y);
+    ctx.moveTo(sx, sy);
+    for (let i = 1; i < _trackPoints.length; i++) {
+      const [px, py] = toCanvas(_trackPoints[i].x, _trackPoints[i].y);
+      ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // Bright centre line
+    ctx.beginPath();
+    ctx.strokeStyle = '#55556a';
+    ctx.lineWidth   = 2;
+    const [sx2, sy2] = toCanvas(_trackPoints[0].x, _trackPoints[0].y);
+    ctx.moveTo(sx2, sy2);
+    for (let i = 1; i < _trackPoints.length; i++) {
+      const [px, py] = toCanvas(_trackPoints[i].x, _trackPoints[i].y);
+      ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+
+  // Draw driver dots
+  for (const p of posOrder) {
+    if (p.x == null || p.y == null) continue;
+    const d   = driverMap[p.driver_number] || {};
+    const col = teamColour(d.team_name);
+    const [cx, cy] = toCanvas(p.x, p.y);
+
+    // Outer glow
+    ctx.beginPath();
+    ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+    ctx.fillStyle = col + '44';
+    ctx.fill();
+
+    // Dot
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = col;
+    ctx.fill();
+
+    // Label (P1 always, others if enough space)
+    if (p.position === 1 || p.position <= 3) {
+      const abbr = d.name_acronym || `${p.driver_number}`;
+      ctx.fillStyle = '#fff';
+      ctx.font      = 'bold 9px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(abbr, cx, cy - 10);
+    }
+  }
+}
+
+function formatLapTime(seconds) {
+  if (!seconds) return '';
+  const m = Math.floor(seconds / 60);
+  const s = (seconds % 60).toFixed(3).padStart(6, '0');
+  return m > 0 ? `${m}:${s}` : `${Number(seconds).toFixed(3)}`;
+}
+
+function showLiveIdle(msg) {
+  const container = document.getElementById('live-content');
+  if (!container) return;
+  container.innerHTML = `
+    <div class="live-idle">
+      <div class="live-idle-icon">🏎️</div>
+      <h3>No Live Session</h3>
+      <p>${msg || 'Live timing will appear here when a session is in progress.'}</p>
+      <p style="margin-top:8px;font-size:12px">Data via <a href="https://openf1.org" target="_blank" style="color:var(--f1-red)">OpenF1 API</a> · ~5–10s delay</p>
+    </div>`;
 }
 
 // ════════════════════════════════════════════════
