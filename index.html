@@ -575,7 +575,7 @@ function fmtTime(d) {
 async function fetchLiveRace() {
   try {
     // Get latest session
-    const sessRes = await proxyFetch('https://api.openf1.org/v1/sessions?session_type=Race&year=2025');
+    const sessRes = await proxyFetch('https://api.openf1.org/v1/sessions?session_type=Race&year=2026');
     const sessions = await sessRes.json();
     if (!sessions || sessions.length === 0) throw new Error('No sessions');
 
@@ -747,7 +747,7 @@ function renderRaceTable(sorted, driverMap, intervals, tyres) {
 // ─────────────────────────────────────────────
 async function fetchDriverStandings() {
   try {
-    const res = await proxyFetch('https://api.jolpi.ca/ergast/f1/2025/driverStandings.json');
+    const res = await proxyFetch('https://api.jolpi.ca/ergast/f1/2026/driverstandings.json');
     const json = await res.json();
     const standings = json?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings;
     if (!standings) throw new Error('No data');
@@ -796,7 +796,7 @@ async function fetchDriverStandings() {
 // ─────────────────────────────────────────────
 async function fetchConstructorStandings() {
   try {
-    const res = await proxyFetch('https://api.jolpi.ca/ergast/f1/2025/constructorStandings.json');
+    const res = await proxyFetch('https://api.jolpi.ca/ergast/f1/2026/constructorstandings.json');
     const json = await res.json();
     const standings = json?.MRData?.StandingsTable?.StandingsLists?.[0]?.ConstructorStandings;
     if (!standings) throw new Error('No data');
