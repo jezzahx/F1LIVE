@@ -2690,55 +2690,131 @@ function dismissInstallBanner() {
 //  NEWS TAB
 // ════════════════════════════════════════════════
 
-const RSS2JSON_BASE = 'https://api.rss2json.com/v1/api.json?rss_url=';
+// ── CORS proxy + RSS/Atom helpers ──────────────────────────────
+
+// Tries allorigins.win, then corsproxy.io — returns raw text content
+async function fetchViaProxy(url) {
+  // 1. allorigins.win → returns JSON { contents: "..." }
+  try {
+    const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.contents) return data.contents;
+    }
+  } catch (_) {}
+  // 2. corsproxy.io → returns raw content directly
+  try {
+    const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+    if (res.ok) return await res.text();
+  } catch (_) {}
+  throw new Error('CORS proxy unavailable — check your internet connection');
+}
+
+// Parse standard RSS 2.0 XML into an array of item objects
+function parseRSSItems(xmlStr) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlStr, 'text/xml');
+  if (doc.querySelector('parsererror')) throw new Error('Invalid RSS XML');
+  const items = [];
+  for (const el of doc.querySelectorAll('item')) {
+    // <link> in RSS is a text node, not an attribute
+    const linkNode = el.querySelector('link');
+    const link = linkNode?.textContent?.trim()
+              || linkNode?.nextSibling?.textContent?.trim()
+              || linkNode?.getAttribute('href') || '';
+    const description = el.querySelector('description')?.textContent?.trim() || '';
+    // Thumbnail: media:content, media:thumbnail, or enclosure
+    const mediaNS = 'http://search.yahoo.com/mrss/';
+    const mediaEl = el.getElementsByTagNameNS(mediaNS, 'content')[0]
+                 || el.getElementsByTagNameNS(mediaNS, 'thumbnail')[0];
+    const enclosure = el.querySelector('enclosure');
+    const thumbnail = mediaEl?.getAttribute('url') || enclosure?.getAttribute('url') || '';
+    items.push({
+      title:       el.querySelector('title')?.textContent?.trim() || '',
+      link,
+      description,
+      pubDate:     el.querySelector('pubDate')?.textContent?.trim() || '',
+      thumbnail,
+    });
+  }
+  return items;
+}
+
+// Parse YouTube Atom feed XML into video objects
+function parseYouTubeAtom(xmlStr) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlStr, 'text/xml');
+  if (doc.querySelector('parsererror')) throw new Error('Invalid Atom XML');
+  const videos = [];
+  const YT_NS = 'http://www.youtube.com/xml/schemas/2015';
+  for (const entry of doc.querySelectorAll('entry')) {
+    const link = entry.querySelector('link[rel="alternate"]')?.getAttribute('href')
+              || entry.querySelector('link')?.getAttribute('href') || '';
+    // yt:videoId element (namespaced)
+    const videoIdEl = entry.getElementsByTagNameNS(YT_NS, 'videoId')[0]
+                   || [...entry.children].find(c => c.localName === 'videoId');
+    const videoId = videoIdEl?.textContent?.trim()
+                  || link.match(/[?&]v=([^&]+)/)?.[1] || '';
+    if (!videoId) continue;
+    // media:group > media:thumbnail
+    const thumbEl = entry.querySelector('thumbnail') || entry.querySelector('[url]');
+    const thumbnail = thumbEl?.getAttribute('url')
+                   || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+    videos.push({
+      title:     entry.querySelector('title')?.textContent?.trim() || '',
+      link:      link || `https://www.youtube.com/watch?v=${videoId}`,
+      videoId,
+      pubDate:   entry.querySelector('published')?.textContent?.trim() || '',
+      thumbnail,
+    });
+  }
+  return videos;
+}
+
+// ── News ────────────────────────────────────────────────────────
 
 const NEWS_SOURCES = [
-  { id: 'autosport',    label: 'Autosport',    url: 'https://www.autosport.com/rss/f1/news/'        },
-  { id: 'motorsport',   label: 'Motorsport',   url: 'https://www.motorsport.com/rss/f1/news/'       },
-  { id: 'gpfans',       label: 'GPFans',       url: 'https://www.gpfans.com/en/rss/'                },
-  { id: 'racefans',     label: 'RaceFans',     url: 'https://www.racefans.net/feed/'                },
+  { id: 'bbc',        label: 'BBC Sport',  url: 'https://feeds.bbci.co.uk/sport/formula1/rss.xml'  },
+  { id: 'autosport',  label: 'Autosport',  url: 'https://www.autosport.com/rss/f1/news/'           },
+  { id: 'racefans',   label: 'RaceFans',   url: 'https://www.racefans.net/feed/'                   },
+  { id: 'motorsport', label: 'Motorsport', url: 'https://www.motorsport.com/rss/f1/news/'          },
 ];
 
-let newsCurrentSource = null;   // id of the currently displayed source
-let newsCache = {};             // id → items[]
+let newsCurrentSource = null;
+let newsCache = {};
 
 async function loadNews(sourceId) {
   const el = document.getElementById('news-content');
 
-  // First load: try sources in order until one works
+  // First load: try sources in order until one succeeds
   if (!sourceId) {
     for (const src of NEWS_SOURCES) {
       try {
-        const data = await fetchJSON(
-          `${RSS2JSON_BASE}${encodeURIComponent(src.url)}&count=30`
-        );
-        if (data.status === 'ok' && data.items?.length) {
-          newsCache[src.id] = data.items;
+        const xml = await fetchViaProxy(src.url);
+        const items = parseRSSItems(xml);
+        if (items.length) {
+          newsCache[src.id] = items;
           newsCurrentSource = src.id;
           break;
         }
       } catch (_) {}
     }
     if (!newsCurrentSource) {
-      setError('news-content', 'Could not load any news feed');
+      setError('news-content', 'Could not load any news feed — CORS proxy may be temporarily down. Try again shortly.');
       return;
     }
     sourceId = newsCurrentSource;
   }
 
-  // Switching source: fetch if not cached
+  // Source switch: fetch & parse if not cached
   if (!newsCache[sourceId]) {
     el.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div><p>Loading…</p></div>';
     const src = NEWS_SOURCES.find(s => s.id === sourceId);
     try {
-      const data = await fetchJSON(
-        `${RSS2JSON_BASE}${encodeURIComponent(src.url)}&count=30`
-      );
-      if (data.status === 'ok' && data.items?.length) {
-        newsCache[sourceId] = data.items;
-      } else {
-        throw new Error('Feed returned no items');
-      }
+      const xml = await fetchViaProxy(src.url);
+      const items = parseRSSItems(xml);
+      if (!items.length) throw new Error('Feed returned no items');
+      newsCache[sourceId] = items;
     } catch (e) {
       setError('news-content', `Could not load ${src.label}: ${e.message}`);
       return;
@@ -2754,14 +2830,15 @@ async function loadNews(sourceId) {
             onclick="loadNews('${src.id}')">${src.label}</button>
   `).join('');
 
-  const cards = items.map(item => {
-    const d   = new Date(item.pubDate);
-    const ago = timeAgo(d);
-    const thumb = item.thumbnail || item.enclosure?.link || '';
-    const raw   = item.description?.replace(/<[^>]*>/g, '').replace(/&[a-z]+;/g, ' ').trim() || '';
-    const desc  = raw.length > 150 ? raw.slice(0, 150) + '…' : raw;
+  const cards = items.slice(0, 30).map(item => {
+    const ago   = timeAgo(new Date(item.pubDate));
+    const thumb = item.thumbnail;
+    const raw   = item.description.replace(/<[^>]*>/g, '').replace(/&[a-z#0-9]+;/gi, ' ').trim();
+    const desc  = raw.length > 160 ? raw.slice(0, 160) + '…' : raw;
+    // Escape for HTML attribute use in the link href
+    const safeLink = item.link.replace(/"/g, '%22');
     return `
-      <a class="news-card" href="${item.link}" target="_blank" rel="noopener noreferrer">
+      <a class="news-card" href="${safeLink}" target="_blank" rel="noopener noreferrer">
         ${thumb ? `<div class="news-thumb" style="background-image:url('${thumb}')"></div>` : ''}
         <div class="news-body">
           <div class="news-title">${item.title}</div>
@@ -2777,7 +2854,7 @@ async function loadNews(sourceId) {
   el.innerHTML = `
     <div class="section-header">
       <span class="section-title">F1 News</span>
-      <span class="section-meta">${items.length} stories</span>
+      <span class="section-meta">${items.length} stories · ${currentSrc.label}</span>
     </div>
     <div class="news-filters">${filterBtns}</div>
     <div class="news-grid">${cards}</div>`;
@@ -2785,8 +2862,9 @@ async function loadNews(sourceId) {
 
 function timeAgo(date) {
   const sec = Math.floor((Date.now() - date) / 1000);
-  if (sec < 60)   return 'just now';
-  if (sec < 3600) return `${Math.floor(sec / 60)}m ago`;
+  if (isNaN(sec) || sec < 0) return '';
+  if (sec < 60)    return 'just now';
+  if (sec < 3600)  return `${Math.floor(sec / 60)}m ago`;
   if (sec < 86400) return `${Math.floor(sec / 3600)}h ago`;
   return `${Math.floor(sec / 86400)}d ago`;
 }
@@ -2795,14 +2873,16 @@ function timeAgo(date) {
 //  COMPONENTS TAB
 // ════════════════════════════════════════════════
 
+// 2026 F1 Power Unit regulations: MGU-H removed; ICE/TC/MGU-K/ES/CE each capped
+// at 4 for 2026 (extra unit allowed in the transition year; drops to 3 from 2027).
+// Exhaust reduced from 8 → 4 in 2026, then 3 from 2027.
 const PU_COMPONENTS = [
-  { code: 'ICE',   name: 'Internal Combustion Engine',   limit: 3 },
-  { code: 'TC',    name: 'Turbocharger',                 limit: 3 },
-  { code: 'MGU-H', name: 'Motor Generator Unit – Heat',  limit: 3 },
-  { code: 'MGU-K', name: 'Motor Generator Unit – Kinetic', limit: 3 },
-  { code: 'ES',    name: 'Energy Store',                 limit: 2 },
-  { code: 'CE',    name: 'Control Electronics',          limit: 2 },
-  { code: 'EXH',   name: 'Exhaust System',               limit: 8 },
+  { code: 'ICE',   name: 'Internal Combustion Engine',    limit: 4, note: '↓3 from 2027' },
+  { code: 'TC',    name: 'Turbocharger',                  limit: 4, note: '↓3 from 2027' },
+  { code: 'MGU-K', name: 'Motor Generator Unit – Kinetic (350 kW)', limit: 4, note: '↓3 from 2027' },
+  { code: 'ES',    name: 'Energy Store / Battery',        limit: 4, note: '↓3 from 2027' },
+  { code: 'CE',    name: 'Control Electronics',           limit: 4, note: '↓3 from 2027' },
+  { code: 'EXH',   name: 'Exhaust System',                limit: 4, note: '↓3 from 2027' },
 ];
 
 async function loadComponents() {
@@ -2859,7 +2939,7 @@ async function loadComponents() {
     return `
       <div class="comp-item">
         <span class="comp-code">${c.code}</span>
-        <span class="comp-name">${c.name}</span>
+        <span class="comp-name">${c.name}${c.note ? ` <span style="font-size:10px;color:var(--text-dim);margin-left:4px">${c.note}</span>` : ''}</span>
         <div class="comp-dots">${dots}<span class="comp-num">${c.limit}</span></div>
       </div>`;
   }).join('');
@@ -2896,12 +2976,14 @@ async function loadComponents() {
   document.getElementById('components-content').innerHTML = `
     <div class="section-header">
       <span class="section-title">Power Unit Allocation</span>
-      <span class="section-meta">2025 Season Limits</span>
+      <span class="section-meta">2026 Season Limits</span>
     </div>
     <div class="comp-limits-grid">${limitsHtml}</div>
     <p class="comp-note">
-      Exceeding the allocation triggers a grid penalty — 10 places for the 1st extra unit, 5 places for each additional.
-      Gearbox changes also incur a 5-place penalty. Drivers who must use more than the limit start from the pit lane.
+      2026 regulations: MGU-H removed; all PU elements capped at 4 this year (a transitional extra unit),
+      dropping to 3 from 2027. Exhaust drops to 3 from 2027 as well. Exceeding the allocation triggers
+      a 10-place grid penalty for the 1st extra unit, 5 places for each subsequent one. Gearbox changes
+      also carry a 5-place penalty. Drivers who exceed all limits start from the pit lane.
     </p>
 
     <div class="section-header" style="margin-top:28px">
@@ -2931,57 +3013,52 @@ async function loadComponents() {
 const F1_YT_CHANNEL = 'UCB_qr75-ydFVKSF9Dmo6izg';  // Formula 1 official YouTube
 
 async function loadHighlights() {
-  const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${F1_YT_CHANNEL}`;
-  let items = [];
+  const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${F1_YT_CHANNEL}`;
+  let entries = [];
 
   try {
-    const data = await fetchJSON(
-      `${RSS2JSON_BASE}${encodeURIComponent(rssUrl)}&count=50`
-    );
-    if (data.status === 'ok' && data.items?.length) {
-      items = data.items;
-    }
-  } catch (_) {}
-
-  if (!items.length) {
-    setError('highlights-content', 'Could not load YouTube feed — try opening the Formula 1 YouTube channel directly.');
+    const xml = await fetchViaProxy(feedUrl);
+    entries = parseYouTubeAtom(xml);
+  } catch (e) {
+    setError('highlights-content',
+      'Could not load YouTube feed — CORS proxy may be temporarily down. ' +
+      '<a href="https://www.youtube.com/@Formula1" target="_blank" rel="noopener" ' +
+      'style="color:var(--f1-red)">Open Formula 1 on YouTube ↗</a>');
     return;
   }
 
-  // Prefer videos that contain "highlight" or "race edit" in their title
-  const highlighted = items.filter(v => /highlight|race edit|best of|top \d/i.test(v.title));
-  const videos = (highlighted.length >= 4 ? highlighted : items).slice(0, 20);
-
-  function extractVideoId(item) {
-    const fromLink = item.link?.match(/[?&]v=([^&]+)/)?.[1];
-    const fromGuid = item.guid?.match(/[?&]v=([^&]+)/)?.[1]
-                  || item.guid?.match(/video\/([^?&/]+)/)?.[1];
-    return fromLink || fromGuid || '';
+  if (!entries.length) {
+    setError('highlights-content', 'YouTube feed returned no videos. Try refreshing.');
+    return;
   }
 
-  const cards = videos.map(item => {
-    const videoId = extractVideoId(item);
-    if (!videoId) return '';
-    const d   = new Date(item.pubDate);
-    const ago = timeAgo(d);
+  // Prefer race highlight / edit videos; fall back to all recent uploads
+  const highlighted = entries.filter(v =>
+    /highlight|race edit|best of|top \d|GP recap/i.test(v.title)
+  );
+  const videos = (highlighted.length >= 4 ? highlighted : entries).slice(0, 20);
+
+  const cards = videos.map(v => {
+    const ago = timeAgo(new Date(v.pubDate));
+    const safeTitle = v.title.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     return `
       <div class="highlight-card">
         <div class="highlight-embed">
           <iframe
-            src="https://www.youtube.com/embed/${videoId}?rel=0"
-            title="${item.title.replace(/"/g, '&quot;')}"
+            src="https://www.youtube.com/embed/${v.videoId}?rel=0"
+            title="${safeTitle}"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
             loading="lazy">
           </iframe>
         </div>
         <div class="highlight-info">
-          <div class="highlight-title">${item.title}</div>
+          <div class="highlight-title">${v.title}</div>
           <div class="highlight-date">${ago}</div>
-          <a class="highlight-yt-link" href="${item.link}" target="_blank" rel="noopener">▶ Watch on YouTube</a>
+          <a class="highlight-yt-link" href="${v.link}" target="_blank" rel="noopener">▶ Watch on YouTube</a>
         </div>
       </div>`;
-  }).filter(Boolean).join('');
+  }).join('');
 
   document.getElementById('highlights-content').innerHTML = `
     <div class="section-header">
