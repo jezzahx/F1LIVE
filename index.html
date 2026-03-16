@@ -1071,57 +1071,50 @@
       font-weight: 700;
     }
 
-    /* ── Highlights Tab ── */
-    .highlights-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-    @media (min-width: 640px) {
-      .highlights-grid { grid-template-columns: 1fr 1fr; }
-    }
-    .highlight-card {
-      background: var(--bg-card);
+    /* Component matrix */
+    .comp-matrix-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       border: 1px solid var(--border);
       border-radius: 10px;
-      overflow: hidden;
-      transition: border-color 0.2s;
     }
-    .highlight-card:hover { border-color: #555; }
-    .highlight-embed {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      overflow: hidden;
-      background: #000;
+    .comp-matrix-table {
+      width: 100%;
+      border-collapse: collapse;
     }
-    .highlight-embed iframe {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      border: none;
+    .comp-matrix-table thead tr {
+      background: #111;
+      border-bottom: 1px solid var(--border);
     }
-    .highlight-info { padding: 12px 14px 14px; }
-    .highlight-title {
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.4;
-      margin-bottom: 5px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    .comp-matrix-table thead th { color: var(--text-muted); font-weight: 700; }
+    .comp-matrix-table tbody tr { border-bottom: 1px solid #1c1c1c; }
+    .comp-matrix-table tbody tr:last-child { border-bottom: none; }
+    .comp-matrix-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+    .comp-dot.empty {
+      background: transparent;
+      border: 1px solid var(--border);
     }
-    .highlight-date { font-size: 11px; color: var(--text-dim); }
-    .highlight-yt-link {
+
+    .comp-status-dot {
       display: inline-block;
-      margin-top: 6px;
-      font-size: 11px;
-      color: #ff4444;
-      text-decoration: none;
-      font-weight: 600;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      cursor: default;
     }
-    .highlight-yt-link:hover { color: #ff6666; }
+
+    .comp-pill {
+      display: inline-block;
+      background: rgba(225,6,0,0.12);
+      color: #cc4444;
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 10.5px;
+      font-weight: 600;
+      margin-right: 4px;
+      cursor: default;
+    }
+
 
     /* ── Responsive ── */
     @media (max-width: 600px) {
@@ -1187,9 +1180,6 @@
   <div class="tab" onclick="switchTab('components')" id="tab-components">
     <span class="tab-icon">⚙️</span>Components
   </div>
-  <div class="tab" onclick="switchTab('highlights')" id="tab-highlights">
-    <span class="tab-icon">▶️</span>Highlights
-  </div>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -1232,10 +1222,6 @@
     <div id="components-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading component data…</p></div></div>
   </div>
 
-  <!-- HIGHLIGHTS TAB -->
-  <div class="tab-panel" id="panel-highlights">
-    <div id="highlights-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading highlights…</p></div></div>
-  </div>
 
 </div>
 
@@ -1324,7 +1310,6 @@ let latestCompletedRound = null; // highest round whose race is in the past
 let trackTimesLoaded   = false;
 let newsLoaded         = false;
 let componentsLoaded   = false;
-let highlightsLoaded   = false;
 
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1344,10 +1329,7 @@ function switchTab(tab) {
     componentsLoaded = true;
     loadComponents().catch(e => setError('components-content', e.message));
   }
-  if (tab === 'highlights' && !highlightsLoaded) {
-    highlightsLoaded = true;
-    loadHighlights().catch(e => setError('highlights-content', e.message));
-  }
+
 }
 
 // ════════════════════════════════════════════════
@@ -2740,37 +2722,6 @@ function parseRSSItems(xmlStr) {
   return items;
 }
 
-// Parse YouTube Atom feed XML into video objects
-function parseYouTubeAtom(xmlStr) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xmlStr, 'text/xml');
-  if (doc.querySelector('parsererror')) throw new Error('Invalid Atom XML');
-  const videos = [];
-  const YT_NS = 'http://www.youtube.com/xml/schemas/2015';
-  for (const entry of doc.querySelectorAll('entry')) {
-    const link = entry.querySelector('link[rel="alternate"]')?.getAttribute('href')
-              || entry.querySelector('link')?.getAttribute('href') || '';
-    // yt:videoId element (namespaced)
-    const videoIdEl = entry.getElementsByTagNameNS(YT_NS, 'videoId')[0]
-                   || [...entry.children].find(c => c.localName === 'videoId');
-    const videoId = videoIdEl?.textContent?.trim()
-                  || link.match(/[?&]v=([^&]+)/)?.[1] || '';
-    if (!videoId) continue;
-    // media:group > media:thumbnail
-    const thumbEl = entry.querySelector('thumbnail') || entry.querySelector('[url]');
-    const thumbnail = thumbEl?.getAttribute('url')
-                   || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
-    videos.push({
-      title:     entry.querySelector('title')?.textContent?.trim() || '',
-      link:      link || `https://www.youtube.com/watch?v=${videoId}`,
-      videoId,
-      pubDate:   entry.querySelector('published')?.textContent?.trim() || '',
-      thumbnail,
-    });
-  }
-  return videos;
-}
-
 // ── News ────────────────────────────────────────────────────────
 
 const NEWS_SOURCES = [
@@ -2873,30 +2824,33 @@ function timeAgo(date) {
 //  COMPONENTS TAB
 // ════════════════════════════════════════════════
 
-// 2026 F1 Power Unit regulations: MGU-H removed; ICE/TC/MGU-K/ES/CE each capped
-// at 4 for 2026 (extra unit allowed in the transition year; drops to 3 from 2027).
-// Exhaust reduced from 8 → 4 in 2026, then 3 from 2027.
+// 2026 F1 Power Unit regulations (MGU-H removed).
+// Standard limit + 1 extra allowed for 2026 transition year only:
+//   ICE / TC:        3 base + 1 extra = 4 in 2026, back to 3 from 2027
+//   MGU-K / ES / CE: 2 base + 1 extra = 3 in 2026, back to 2 from 2027
+//   Exhaust: 4 in 2026 (reduced from 8), then 3 from 2027
 const PU_COMPONENTS = [
-  { code: 'ICE',   name: 'Internal Combustion Engine',    limit: 4, note: '↓3 from 2027' },
-  { code: 'TC',    name: 'Turbocharger',                  limit: 4, note: '↓3 from 2027' },
-  { code: 'MGU-K', name: 'Motor Generator Unit – Kinetic (350 kW)', limit: 4, note: '↓3 from 2027' },
-  { code: 'ES',    name: 'Energy Store / Battery',        limit: 4, note: '↓3 from 2027' },
-  { code: 'CE',    name: 'Control Electronics',           limit: 4, note: '↓3 from 2027' },
-  { code: 'EXH',   name: 'Exhaust System',                limit: 4, note: '↓3 from 2027' },
+  { code: 'ICE',   name: 'Internal Combustion Engine',              limit: 4, note: 'base 3 +1 · ↓3 from 2027' },
+  { code: 'TC',    name: 'Turbocharger',                            limit: 4, note: 'base 3 +1 · ↓3 from 2027' },
+  { code: 'MGU-K', name: 'Motor Generator Unit – Kinetic (350 kW)', limit: 3, note: 'base 2 +1 · ↓2 from 2027' },
+  { code: 'ES',    name: 'Energy Store / Battery',                  limit: 3, note: 'base 2 +1 · ↓2 from 2027' },
+  { code: 'CE',    name: 'Control Electronics',                     limit: 3, note: 'base 2 +1 · ↓2 from 2027' },
+  { code: 'EXH',   name: 'Exhaust System',                          limit: 4, note: '↓3 from 2027' },
 ];
 
 async function loadComponents() {
-  // We infer grid penalties by comparing qualifying vs race grid positions.
-  // A drop of ≥5 places almost always indicates a power unit / gearbox penalty.
-  const [racesData, qualData] = await Promise.all([
+  // Fetch race results, qualifying results, and driver standings in parallel
+  const [racesData, qualData, driverStandData] = await Promise.all([
     fetchJSON(`${JOLPICA_BASE}/current/results.json?limit=500`),
     fetchJSON(`${JOLPICA_BASE}/current/qualifying.json?limit=500`),
+    fetchJSON(`${JOLPICA_BASE}/current/driverstandings.json`),
   ]);
 
-  const races   = racesData?.MRData?.RaceTable?.Races   || [];
-  const qualRaces = qualData?.MRData?.RaceTable?.Races  || [];
+  const races          = racesData?.MRData?.RaceTable?.Races || [];
+  const qualRaces      = qualData?.MRData?.RaceTable?.Races  || [];
+  const driverStandings = driverStandData?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings || [];
 
-  // Build qualifying position lookup: `${round}_${driverId}` → qualifying position
+  // Build qualifying position lookup: `${round}_${driverId}` → position
   const qualPos = {};
   for (const qr of qualRaces) {
     for (const qRes of qr.QualifyingResults || []) {
@@ -2904,30 +2858,26 @@ async function loadComponents() {
     }
   }
 
-  // Gather penalty events per driver
-  const penaltiesByDriver = {};   // driverId → { driver, constructor, events[] }
-  let totalPenaltyEvents = 0;
-
+  // Gather grid penalty events per driver (≥5 place grid drop vs qualifying)
+  const penaltiesByDriver = {};
   for (const race of races) {
     for (const result of race.Results || []) {
       const dId  = result.Driver?.driverId;
-      const grid = parseInt(result.grid);   // actual starting position
+      const grid = parseInt(result.grid);
       const qp   = qualPos[`${race.round}_${dId}`];
-
-      if (!qp || !grid || grid <= 0) continue;  // no qualifying data or pit lane start
+      if (!qp || !grid || grid <= 0) continue;
       const drop = grid - qp;
       if (drop >= 5) {
         if (!penaltiesByDriver[dId]) {
-          penaltiesByDriver[dId] = { driver: result.Driver, constructor: result.Constructor, events: [] };
+          penaltiesByDriver[dId] = { events: [] };
         }
         penaltiesByDriver[dId].events.push({
-          race: race.raceName,
-          round: parseInt(race.round),
+          race:    race.raceName.replace(' Grand Prix', ' GP'),
+          round:   parseInt(race.round),
           qualPos: qp,
           gridPos: grid,
           drop,
         });
-        totalPenaltyEvents++;
       }
     }
   }
@@ -2944,128 +2894,112 @@ async function loadComponents() {
       </div>`;
   }).join('');
 
-  // ── Penalty events table ─────────────────────────────────────
-  const penaltyRows = Object.values(penaltiesByDriver)
-    .sort((a, b) => b.events.length - a.events.length)
-    .map(info => {
-      const color = teamColor(info.constructor?.constructorId || '');
-      const lastE = info.events[info.events.length - 1];
-      const drops = info.events.map(e =>
-        `<span title="${e.race}: Qual P${e.qualPos} → Grid P${e.gridPos}" style="margin-right:3px">−${e.drop}</span>`
-      ).join('');
-      return `<tr>
-        <td>
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="team-color-bar" style="background:${color}"></div>
-            <span>${info.driver?.givenName} ${info.driver?.familyName}</span>
-          </div>
-        </td>
-        <td class="hide-mobile" style="color:var(--text-muted);font-size:12px">${info.constructor?.name || ''}</td>
-        <td class="hide-mobile" style="color:var(--text-muted);font-size:12px">${lastE.race}</td>
-        <td style="text-align:right">
-          <span class="penalty-badge">${info.events.length}×</span>
-        </td>
-        <td class="hide-mobile" style="font-size:11px;color:var(--text-dim)">${drops}</td>
-      </tr>`;
+  // ── Driver × Component matrix ─────────────────────────────────
+  // Rows = drivers (championship order), Columns = each PU component.
+  // Dot logic per cell:
+  //   • 1 filled green dot  = baseline (every driver who has raced uses ≥ 1 of each)
+  //   • Extra red dot(s)    = inferred from detected grid-penalty events this season
+  //   • Empty dots          = remaining allocation
+  // Note: because we can only detect *that* a penalty happened (not *which* component),
+  // red dots appear across all components for penalty drivers as a conservative flag.
+
+  const racesCompleted = races.length;
+
+  // Column headers — one per component
+  const compHeaders = PU_COMPONENTS.map(c =>
+    `<th style="text-align:center;padding:10px 6px;font-size:10px;white-space:nowrap">
+       ${c.code}<br><span style="color:var(--text-dim);font-weight:400">/${c.limit}</span>
+     </th>`
+  ).join('');
+
+  const driverRows = driverStandings.map(s => {
+    const driver = s.Driver || {};
+    const cons   = s.Constructors?.[0] || {};
+    const color  = teamColor(cons.constructorId || '');
+    const dId    = driver.driverId;
+    const pen    = penaltiesByDriver[dId] || { events: [] };
+    const penCount = pen.events.length;
+    const hasRaced = racesCompleted > 0;
+
+    // Per-component cells
+    const compCells = PU_COMPONENTS.map(c => {
+      // Minimum 1 used once they've raced; +1 per penalty event (conservative across all components)
+      const baseUsed   = hasRaced ? 1 : 0;
+      const totalUsed  = Math.min(baseUsed + penCount, c.limit);
+      const overLimit  = (baseUsed + penCount) > c.limit;
+
+      const dots = Array.from({ length: c.limit }, (_, i) => {
+        if (i < baseUsed)  return `<span class="comp-dot avail" title="Used"></span>`;
+        if (i < totalUsed) return `<span class="comp-dot used"  title="Inferred penalty usage"></span>`;
+        return `<span class="comp-dot empty"></span>`;
+      }).join('');
+
+      const cellBg = overLimit ? 'background:rgba(225,6,0,0.08)' : '';
+      return `<td style="text-align:center;padding:8px 4px;${cellBg}">
+                <div class="comp-dots" style="justify-content:center;gap:3px">${dots}</div>
+                <div style="font-size:9px;color:var(--text-dim);margin-top:3px">${totalUsed}/${c.limit}</div>
+              </td>`;
     }).join('');
 
-  const noDataNote = totalPenaltyEvents === 0
-    ? '<p class="comp-note" style="margin-top:16px;text-align:center">No significant grid penalties detected this season yet.</p>'
-    : '';
+    // Penalty events pill (shown inline after driver name on wide screens)
+    const penPills = pen.events.map(e =>
+      `<span class="comp-pill" title="Qual P${e.qualPos} → Grid P${e.gridPos} (−${e.drop} places)">${e.race}</span>`
+    ).join('');
+
+    const rowHighlight = penCount > 0 ? 'background:rgba(225,6,0,0.04)' : '';
+
+    return `
+      <tr style="${rowHighlight}">
+        <td style="min-width:130px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <div class="team-color-bar" style="background:${color}"></div>
+            <div>
+              <div style="font-size:12px;font-weight:700">${driver.code || driver.familyName}</div>
+              <div style="font-size:10px;color:var(--text-muted)">${cons.name || ''}</div>
+              ${penPills ? `<div style="margin-top:3px">${penPills}</div>` : ''}
+            </div>
+          </div>
+        </td>
+        ${compCells}
+      </tr>`;
+  }).join('');
 
   document.getElementById('components-content').innerHTML = `
     <div class="section-header">
       <span class="section-title">Power Unit Allocation</span>
-      <span class="section-meta">2026 Season Limits</span>
+      <span class="section-meta">2026 Season · ${racesCompleted} rounds completed</span>
+    </div>
+
+    <div class="comp-matrix-wrap">
+      <table class="comp-matrix-table">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:10px 8px;font-size:10px;min-width:130px">Driver</th>
+            ${compHeaders}
+          </tr>
+        </thead>
+        <tbody>${driverRows}</tbody>
+      </table>
+    </div>
+
+    <p class="comp-note" style="margin-top:12px">
+      🟢 = baseline usage (1 per component minimum once racing begins) &nbsp;
+      🔴 = inferred extra usage from detected grid penalty events &nbsp; · &nbsp;
+      Penalty events detected by comparing qualifying position vs grid position (≥5 place drops).
+      Hover a round pill to see the exact position drop. Actual component counts require
+      the official F1 Timing app.
+    </p>
+
+    <div class="section-header" style="margin-top:24px">
+      <span class="section-title">2026 Component Limits</span>
+      <span class="section-meta">Per driver per season</span>
     </div>
     <div class="comp-limits-grid">${limitsHtml}</div>
     <p class="comp-note">
-      2026 regulations: MGU-H removed; all PU elements capped at 4 this year (a transitional extra unit),
-      dropping to 3 from 2027. Exhaust drops to 3 from 2027 as well. Exceeding the allocation triggers
-      a 10-place grid penalty for the 1st extra unit, 5 places for each subsequent one. Gearbox changes
-      also carry a 5-place penalty. Drivers who exceed all limits start from the pit lane.
-    </p>
-
-    <div class="section-header" style="margin-top:28px">
-      <span class="section-title">Grid Penalty Tracker</span>
-      <span class="section-meta">Inferred from qualifying vs grid position (≥5 place drops)</span>
-    </div>
-    ${noDataNote}
-    ${penaltyRows ? `
-    <table class="standings-table">
-      <thead>
-        <tr>
-          <th>Driver</th>
-          <th class="hide-mobile">Team</th>
-          <th class="hide-mobile">Last Event</th>
-          <th style="text-align:right">Penalties</th>
-          <th class="hide-mobile">Drops</th>
-        </tr>
-      </thead>
-      <tbody>${penaltyRows}</tbody>
-    </table>` : ''}`;
-}
-
-// ════════════════════════════════════════════════
-//  HIGHLIGHTS TAB
-// ════════════════════════════════════════════════
-
-const F1_YT_CHANNEL = 'UCB_qr75-ydFVKSF9Dmo6izg';  // Formula 1 official YouTube
-
-async function loadHighlights() {
-  const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${F1_YT_CHANNEL}`;
-  let entries = [];
-
-  try {
-    const xml = await fetchViaProxy(feedUrl);
-    entries = parseYouTubeAtom(xml);
-  } catch (e) {
-    setError('highlights-content',
-      'Could not load YouTube feed — CORS proxy may be temporarily down. ' +
-      '<a href="https://www.youtube.com/@Formula1" target="_blank" rel="noopener" ' +
-      'style="color:var(--f1-red)">Open Formula 1 on YouTube ↗</a>');
-    return;
-  }
-
-  if (!entries.length) {
-    setError('highlights-content', 'YouTube feed returned no videos. Try refreshing.');
-    return;
-  }
-
-  // Prefer race highlight / edit videos; fall back to all recent uploads
-  const highlighted = entries.filter(v =>
-    /highlight|race edit|best of|top \d|GP recap/i.test(v.title)
-  );
-  const videos = (highlighted.length >= 4 ? highlighted : entries).slice(0, 20);
-
-  const cards = videos.map(v => {
-    const ago = timeAgo(new Date(v.pubDate));
-    const safeTitle = v.title.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return `
-      <div class="highlight-card">
-        <div class="highlight-embed">
-          <iframe
-            src="https://www.youtube.com/embed/${v.videoId}?rel=0"
-            title="${safeTitle}"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-            loading="lazy">
-          </iframe>
-        </div>
-        <div class="highlight-info">
-          <div class="highlight-title">${v.title}</div>
-          <div class="highlight-date">${ago}</div>
-          <a class="highlight-yt-link" href="${v.link}" target="_blank" rel="noopener">▶ Watch on YouTube</a>
-        </div>
-      </div>`;
-  }).join('');
-
-  document.getElementById('highlights-content').innerHTML = `
-    <div class="section-header">
-      <span class="section-title">Race Highlights</span>
-      <span class="section-meta">Formula 1 YouTube · ${videos.length} videos</span>
-    </div>
-    <div class="highlights-grid">${cards}</div>`;
+      2026 regulations: MGU-H removed. ICE &amp; TC capped at 4 (base 3 + 1 transitional).
+      MGU-K, ES &amp; CE capped at 3 (base 2 + 1 transitional). All limits reduce from 2027.
+      Exceeding allocation: 10-place grid penalty for 1st extra unit, 5 places for each subsequent.
+    </p>`;
 }
 
 // ════════════════════════════════════════════════
