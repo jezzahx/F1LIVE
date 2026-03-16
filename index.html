@@ -1286,6 +1286,51 @@ const CIRCUIT_FLAGS = {
   'losail':                '🇶🇦', 'yas_marina':           '🇦🇪',
 };
 
+// IANA timezone for each circuit — used to show local race time in the countdown banner
+const CIRCUIT_TIMEZONES = {
+  'albert_park':  'Australia/Melbourne',
+  'bahrain':      'Asia/Bahrain',
+  'jeddah':       'Asia/Riyadh',
+  'suzuka':       'Asia/Tokyo',
+  'shanghai':     'Asia/Shanghai',
+  'miami':        'America/New_York',
+  'imola':        'Europe/Rome',
+  'monaco':       'Europe/Monaco',
+  'catalunya':    'Europe/Madrid',
+  'villeneuve':   'America/Toronto',
+  'red_bull':     'Europe/Vienna',
+  'silverstone':  'Europe/London',
+  'hungaroring':  'Europe/Budapest',
+  'spa':          'Europe/Brussels',
+  'zandvoort':    'Europe/Amsterdam',
+  'monza':        'Europe/Rome',
+  'baku':         'Asia/Baku',
+  'marina_bay':   'Asia/Singapore',
+  'americas':     'America/Chicago',
+  'rodriguez':    'America/Mexico_City',
+  'interlagos':   'America/Sao_Paulo',
+  'las_vegas':    'America/Los_Angeles',
+  'losail':       'Asia/Qatar',
+  'yas_marina':   'Asia/Dubai',
+};
+
+function circuitTimezone(circuitId) {
+  if (!circuitId) return null;
+  const key = circuitId.toLowerCase();
+  for (const [k, tz] of Object.entries(CIRCUIT_TIMEZONES)) {
+    if (key.includes(k)) return tz;
+  }
+  return null;
+}
+
+function fmtTime(date, timeZone) {
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      hour: '2-digit', minute: '2-digit', timeZone, hour12: false,
+    }).format(date);
+  } catch (_) { return ''; }
+}
+
 // ════════════════════════════════════════════════
 //  F1 POINTS TABLES
 // ════════════════════════════════════════════════
@@ -1672,29 +1717,63 @@ async function loadNextRace() {
     if (!race) return;
 
     const raceDate = new Date(race.date + 'T' + (race.time || '00:00:00Z'));
-    const now = new Date();
-    const diff = raceDate - now;
+    const diff = raceDate - new Date();
 
     if (diff < 0 || diff > 30 * 24 * 3600 * 1000) return; // Skip if past or >30 days away
 
-    const days = Math.floor(diff / 86400000);
-    const hrs  = Math.floor((diff % 86400000) / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-
     const flag = circuitFlag(race.Circuit?.circuitId || '');
+
+    const circuitTz = circuitTimezone(race.Circuit?.circuitId || '');
+    let timeStr = '';
+    if (race.time) {
+      const ukTime    = fmtTime(raceDate, 'Europe/London');
+      const localTime = circuitTz ? fmtTime(raceDate, circuitTz) : '';
+      if (ukTime && localTime && circuitTz !== 'Europe/London') {
+        timeStr = ` · ${ukTime} UK / ${localTime} Local`;
+      } else if (ukTime) {
+        timeStr = ` · ${ukTime} UK`;
+      }
+    }
 
     document.getElementById('next-race-wrap').innerHTML = `
       <div class="next-race-banner">
         <div>
           <div class="next-race-label">Next Race · Round ${race.round}</div>
           <div class="next-race-name">${flag} ${race.raceName}</div>
-          <div class="next-race-date">${race.Circuit?.Location?.country || ''} · ${formatDate(race.date)}</div>
+          <div class="next-race-date">${race.Circuit?.Location?.country || ''} · ${formatDate(race.date)}${timeStr}</div>
         </div>
         <div class="countdown">
-          <div class="countdown-number">${days}d ${hrs}h ${mins}m</div>
+          <div class="countdown-number" id="countdown-display">&nbsp;</div>
           <div class="countdown-label">until lights out</div>
         </div>
       </div>`;
+
+    // Clear any previous interval (e.g. on page refresh)
+    if (window._countdownTimer) clearInterval(window._countdownTimer);
+
+    function tick() {
+      const el = document.getElementById('countdown-display');
+      if (!el) { clearInterval(window._countdownTimer); return; }
+
+      const rem = raceDate - new Date();
+      if (rem <= 0) {
+        clearInterval(window._countdownTimer);
+        el.textContent = '🚦 Lights out!';
+        return;
+      }
+      const d = Math.floor(rem / 86400000);
+      const h = Math.floor((rem % 86400000) / 3600000);
+      const m = Math.floor((rem % 3600000)  / 60000);
+      const s = Math.floor((rem % 60000)    / 1000);
+      el.innerHTML =
+        `${d}d ${pad(h)}h ${pad(m)}m ` +
+        `<span style="color:var(--text-muted)">${pad(s)}s</span>`;
+    }
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    tick(); // render immediately, then tick every second
+    window._countdownTimer = setInterval(tick, 1000);
   } catch(e) { /* No big deal */ }
 }
 
