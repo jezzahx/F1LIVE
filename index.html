@@ -924,11 +924,210 @@
       margin-bottom: 0;
     }
 
+    /* ── Scrollable Tabs ── */
+    .tabs-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .tabs-wrapper::-webkit-scrollbar { display: none; }
+
+    /* ── News Tab ── */
+    .news-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .news-card {
+      display: flex;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--bg-card);
+      text-decoration: none;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .news-card:hover { background: var(--bg-card2); }
+    .news-thumb {
+      width: 90px;
+      min-height: 64px;
+      border-radius: 6px;
+      background-size: cover;
+      background-position: center;
+      background-color: #222;
+      flex-shrink: 0;
+    }
+    .news-body { flex: 1; min-width: 0; }
+    .news-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 5px;
+    }
+    .news-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 7px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .news-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .news-source { color: var(--f1-red); font-weight: 600; font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .news-filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .news-filter-btn {
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .news-filter-btn.active, .news-filter-btn:hover {
+      background: var(--f1-red);
+      border-color: var(--f1-red);
+      color: white;
+    }
+
+    /* ── Components Tab ── */
+    .comp-limits-grid {
+      display: grid;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .comp-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 16px;
+      background: var(--bg-card);
+    }
+    .comp-code {
+      width: 64px;
+      font-weight: 800;
+      font-size: 12px;
+      color: var(--f1-red);
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+    .comp-name {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .comp-dots {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .comp-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .comp-dot.avail { background: #2ecc71; }
+    .comp-dot.used  { background: var(--f1-red); }
+    .comp-num {
+      margin-left: 8px;
+      font-size: 12px;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+    }
+    .comp-note {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 12px;
+      line-height: 1.6;
+      padding: 0 4px;
+    }
+    .penalty-badge {
+      display: inline-block;
+      background: rgba(225,6,0,0.15);
+      color: var(--f1-red);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* ── Highlights Tab ── */
+    .highlights-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 640px) {
+      .highlights-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .highlight-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .highlight-card:hover { border-color: #555; }
+    .highlight-embed {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    .highlight-embed iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+    .highlight-info { padding: 12px 14px 14px; }
+    .highlight-title {
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 5px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .highlight-date { font-size: 11px; color: var(--text-dim); }
+    .highlight-yt-link {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 11px;
+      color: #ff4444;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .highlight-yt-link:hover { color: #ff6666; }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       header { padding: 12px 16px; }
       .header-title { font-size: 15px; }
-      .tabs-wrapper { padding: 0 12px; overflow-x: auto; }
+      .tabs-wrapper { padding: 0 12px; }
       .tab { padding: 12px 14px; font-size: 11px; }
       .content { padding: 16px 12px; }
       .race-header-card { flex-wrap: wrap; }
@@ -936,6 +1135,7 @@
       .results-table th, .results-table td { padding: 8px 6px; font-size: 12px; }
       .standings-table th, .standings-table td { padding: 10px 6px; font-size: 12px; }
       .hide-mobile { display: none !important; }
+      .news-thumb { width: 70px; min-height: 52px; }
     }
   </style>
 </head>
@@ -981,6 +1181,15 @@
   <div class="tab" onclick="switchTab('track')" id="tab-track">
     <span class="tab-icon">⏱</span>Track Times
   </div>
+  <div class="tab" onclick="switchTab('news')" id="tab-news">
+    <span class="tab-icon">📰</span>News
+  </div>
+  <div class="tab" onclick="switchTab('components')" id="tab-components">
+    <span class="tab-icon">⚙️</span>Components
+  </div>
+  <div class="tab" onclick="switchTab('highlights')" id="tab-highlights">
+    <span class="tab-icon">▶️</span>Highlights
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -1011,6 +1220,21 @@
   <!-- TRACK TIMES TAB -->
   <div class="tab-panel" id="panel-track">
     <div id="track-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading track times…</p></div></div>
+  </div>
+
+  <!-- NEWS TAB -->
+  <div class="tab-panel" id="panel-news">
+    <div id="news-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading news…</p></div></div>
+  </div>
+
+  <!-- COMPONENTS TAB -->
+  <div class="tab-panel" id="panel-components">
+    <div id="components-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading component data…</p></div></div>
+  </div>
+
+  <!-- HIGHLIGHTS TAB -->
+  <div class="tab-panel" id="panel-highlights">
+    <div id="highlights-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading highlights…</p></div></div>
   </div>
 
 </div>
@@ -1097,7 +1321,10 @@ let latestCompletedRound = null; // highest round whose race is in the past
 //  TAB SWITCHING
 // ════════════════════════════════════════════════
 
-let trackTimesLoaded = false;
+let trackTimesLoaded   = false;
+let newsLoaded         = false;
+let componentsLoaded   = false;
+let highlightsLoaded   = false;
 
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1105,10 +1332,21 @@ function switchTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
   document.getElementById('panel-' + tab).classList.add('active');
 
-  // Lazy-load track times only when the tab is first opened
   if (tab === 'track' && !trackTimesLoaded) {
     trackTimesLoaded = true;
     loadTrackTimes().catch(e => setError('track-content', e.message));
+  }
+  if (tab === 'news' && !newsLoaded) {
+    newsLoaded = true;
+    loadNews().catch(e => setError('news-content', e.message));
+  }
+  if (tab === 'components' && !componentsLoaded) {
+    componentsLoaded = true;
+    loadComponents().catch(e => setError('components-content', e.message));
+  }
+  if (tab === 'highlights' && !highlightsLoaded) {
+    highlightsLoaded = true;
+    loadHighlights().catch(e => setError('highlights-content', e.message));
   }
 }
 
@@ -2446,6 +2684,311 @@ function setupPWA() {
 function dismissInstallBanner() {
   document.getElementById('ios-install-banner').classList.add('hidden');
   sessionStorage.setItem('f1-install-dismissed', '1');
+}
+
+// ════════════════════════════════════════════════
+//  NEWS TAB
+// ════════════════════════════════════════════════
+
+const RSS2JSON_BASE = 'https://api.rss2json.com/v1/api.json?rss_url=';
+
+const NEWS_SOURCES = [
+  { id: 'autosport',    label: 'Autosport',    url: 'https://www.autosport.com/rss/f1/news/'        },
+  { id: 'motorsport',   label: 'Motorsport',   url: 'https://www.motorsport.com/rss/f1/news/'       },
+  { id: 'gpfans',       label: 'GPFans',       url: 'https://www.gpfans.com/en/rss/'                },
+  { id: 'racefans',     label: 'RaceFans',     url: 'https://www.racefans.net/feed/'                },
+];
+
+let newsCurrentSource = null;   // id of the currently displayed source
+let newsCache = {};             // id → items[]
+
+async function loadNews(sourceId) {
+  const el = document.getElementById('news-content');
+
+  // First load: try sources in order until one works
+  if (!sourceId) {
+    for (const src of NEWS_SOURCES) {
+      try {
+        const data = await fetchJSON(
+          `${RSS2JSON_BASE}${encodeURIComponent(src.url)}&count=30`
+        );
+        if (data.status === 'ok' && data.items?.length) {
+          newsCache[src.id] = data.items;
+          newsCurrentSource = src.id;
+          break;
+        }
+      } catch (_) {}
+    }
+    if (!newsCurrentSource) {
+      setError('news-content', 'Could not load any news feed');
+      return;
+    }
+    sourceId = newsCurrentSource;
+  }
+
+  // Switching source: fetch if not cached
+  if (!newsCache[sourceId]) {
+    el.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div><p>Loading…</p></div>';
+    const src = NEWS_SOURCES.find(s => s.id === sourceId);
+    try {
+      const data = await fetchJSON(
+        `${RSS2JSON_BASE}${encodeURIComponent(src.url)}&count=30`
+      );
+      if (data.status === 'ok' && data.items?.length) {
+        newsCache[sourceId] = data.items;
+      } else {
+        throw new Error('Feed returned no items');
+      }
+    } catch (e) {
+      setError('news-content', `Could not load ${src.label}: ${e.message}`);
+      return;
+    }
+  }
+
+  newsCurrentSource = sourceId;
+  const items = newsCache[sourceId];
+  const currentSrc = NEWS_SOURCES.find(s => s.id === sourceId);
+
+  const filterBtns = NEWS_SOURCES.map(src => `
+    <button class="news-filter-btn${src.id === sourceId ? ' active' : ''}"
+            onclick="loadNews('${src.id}')">${src.label}</button>
+  `).join('');
+
+  const cards = items.map(item => {
+    const d   = new Date(item.pubDate);
+    const ago = timeAgo(d);
+    const thumb = item.thumbnail || item.enclosure?.link || '';
+    const raw   = item.description?.replace(/<[^>]*>/g, '').replace(/&[a-z]+;/g, ' ').trim() || '';
+    const desc  = raw.length > 150 ? raw.slice(0, 150) + '…' : raw;
+    return `
+      <a class="news-card" href="${item.link}" target="_blank" rel="noopener noreferrer">
+        ${thumb ? `<div class="news-thumb" style="background-image:url('${thumb}')"></div>` : ''}
+        <div class="news-body">
+          <div class="news-title">${item.title}</div>
+          ${desc ? `<div class="news-desc">${desc}</div>` : ''}
+          <div class="news-meta">
+            <span class="news-source">${currentSrc.label}</span>
+            <span class="news-date">${ago}</span>
+          </div>
+        </div>
+      </a>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="section-header">
+      <span class="section-title">F1 News</span>
+      <span class="section-meta">${items.length} stories</span>
+    </div>
+    <div class="news-filters">${filterBtns}</div>
+    <div class="news-grid">${cards}</div>`;
+}
+
+function timeAgo(date) {
+  const sec = Math.floor((Date.now() - date) / 1000);
+  if (sec < 60)   return 'just now';
+  if (sec < 3600) return `${Math.floor(sec / 60)}m ago`;
+  if (sec < 86400) return `${Math.floor(sec / 3600)}h ago`;
+  return `${Math.floor(sec / 86400)}d ago`;
+}
+
+// ════════════════════════════════════════════════
+//  COMPONENTS TAB
+// ════════════════════════════════════════════════
+
+const PU_COMPONENTS = [
+  { code: 'ICE',   name: 'Internal Combustion Engine',   limit: 3 },
+  { code: 'TC',    name: 'Turbocharger',                 limit: 3 },
+  { code: 'MGU-H', name: 'Motor Generator Unit – Heat',  limit: 3 },
+  { code: 'MGU-K', name: 'Motor Generator Unit – Kinetic', limit: 3 },
+  { code: 'ES',    name: 'Energy Store',                 limit: 2 },
+  { code: 'CE',    name: 'Control Electronics',          limit: 2 },
+  { code: 'EXH',   name: 'Exhaust System',               limit: 8 },
+];
+
+async function loadComponents() {
+  // We infer grid penalties by comparing qualifying vs race grid positions.
+  // A drop of ≥5 places almost always indicates a power unit / gearbox penalty.
+  const [racesData, qualData] = await Promise.all([
+    fetchJSON(`${JOLPICA_BASE}/current/results.json?limit=500`),
+    fetchJSON(`${JOLPICA_BASE}/current/qualifying.json?limit=500`),
+  ]);
+
+  const races   = racesData?.MRData?.RaceTable?.Races   || [];
+  const qualRaces = qualData?.MRData?.RaceTable?.Races  || [];
+
+  // Build qualifying position lookup: `${round}_${driverId}` → qualifying position
+  const qualPos = {};
+  for (const qr of qualRaces) {
+    for (const qRes of qr.QualifyingResults || []) {
+      qualPos[`${qr.round}_${qRes.Driver?.driverId}`] = parseInt(qRes.position);
+    }
+  }
+
+  // Gather penalty events per driver
+  const penaltiesByDriver = {};   // driverId → { driver, constructor, events[] }
+  let totalPenaltyEvents = 0;
+
+  for (const race of races) {
+    for (const result of race.Results || []) {
+      const dId  = result.Driver?.driverId;
+      const grid = parseInt(result.grid);   // actual starting position
+      const qp   = qualPos[`${race.round}_${dId}`];
+
+      if (!qp || !grid || grid <= 0) continue;  // no qualifying data or pit lane start
+      const drop = grid - qp;
+      if (drop >= 5) {
+        if (!penaltiesByDriver[dId]) {
+          penaltiesByDriver[dId] = { driver: result.Driver, constructor: result.Constructor, events: [] };
+        }
+        penaltiesByDriver[dId].events.push({
+          race: race.raceName,
+          round: parseInt(race.round),
+          qualPos: qp,
+          gridPos: grid,
+          drop,
+        });
+        totalPenaltyEvents++;
+      }
+    }
+  }
+
+  // ── Allocation limits card ──────────────────────────────────
+  const limitsHtml = PU_COMPONENTS.map(c => {
+    const dots = Array.from({ length: c.limit }, () =>
+      `<span class="comp-dot avail"></span>`).join('');
+    return `
+      <div class="comp-item">
+        <span class="comp-code">${c.code}</span>
+        <span class="comp-name">${c.name}</span>
+        <div class="comp-dots">${dots}<span class="comp-num">${c.limit}</span></div>
+      </div>`;
+  }).join('');
+
+  // ── Penalty events table ─────────────────────────────────────
+  const penaltyRows = Object.values(penaltiesByDriver)
+    .sort((a, b) => b.events.length - a.events.length)
+    .map(info => {
+      const color = teamColor(info.constructor?.constructorId || '');
+      const lastE = info.events[info.events.length - 1];
+      const drops = info.events.map(e =>
+        `<span title="${e.race}: Qual P${e.qualPos} → Grid P${e.gridPos}" style="margin-right:3px">−${e.drop}</span>`
+      ).join('');
+      return `<tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="team-color-bar" style="background:${color}"></div>
+            <span>${info.driver?.givenName} ${info.driver?.familyName}</span>
+          </div>
+        </td>
+        <td class="hide-mobile" style="color:var(--text-muted);font-size:12px">${info.constructor?.name || ''}</td>
+        <td class="hide-mobile" style="color:var(--text-muted);font-size:12px">${lastE.race}</td>
+        <td style="text-align:right">
+          <span class="penalty-badge">${info.events.length}×</span>
+        </td>
+        <td class="hide-mobile" style="font-size:11px;color:var(--text-dim)">${drops}</td>
+      </tr>`;
+    }).join('');
+
+  const noDataNote = totalPenaltyEvents === 0
+    ? '<p class="comp-note" style="margin-top:16px;text-align:center">No significant grid penalties detected this season yet.</p>'
+    : '';
+
+  document.getElementById('components-content').innerHTML = `
+    <div class="section-header">
+      <span class="section-title">Power Unit Allocation</span>
+      <span class="section-meta">2025 Season Limits</span>
+    </div>
+    <div class="comp-limits-grid">${limitsHtml}</div>
+    <p class="comp-note">
+      Exceeding the allocation triggers a grid penalty — 10 places for the 1st extra unit, 5 places for each additional.
+      Gearbox changes also incur a 5-place penalty. Drivers who must use more than the limit start from the pit lane.
+    </p>
+
+    <div class="section-header" style="margin-top:28px">
+      <span class="section-title">Grid Penalty Tracker</span>
+      <span class="section-meta">Inferred from qualifying vs grid position (≥5 place drops)</span>
+    </div>
+    ${noDataNote}
+    ${penaltyRows ? `
+    <table class="standings-table">
+      <thead>
+        <tr>
+          <th>Driver</th>
+          <th class="hide-mobile">Team</th>
+          <th class="hide-mobile">Last Event</th>
+          <th style="text-align:right">Penalties</th>
+          <th class="hide-mobile">Drops</th>
+        </tr>
+      </thead>
+      <tbody>${penaltyRows}</tbody>
+    </table>` : ''}`;
+}
+
+// ════════════════════════════════════════════════
+//  HIGHLIGHTS TAB
+// ════════════════════════════════════════════════
+
+const F1_YT_CHANNEL = 'UCB_qr75-ydFVKSF9Dmo6izg';  // Formula 1 official YouTube
+
+async function loadHighlights() {
+  const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${F1_YT_CHANNEL}`;
+  let items = [];
+
+  try {
+    const data = await fetchJSON(
+      `${RSS2JSON_BASE}${encodeURIComponent(rssUrl)}&count=50`
+    );
+    if (data.status === 'ok' && data.items?.length) {
+      items = data.items;
+    }
+  } catch (_) {}
+
+  if (!items.length) {
+    setError('highlights-content', 'Could not load YouTube feed — try opening the Formula 1 YouTube channel directly.');
+    return;
+  }
+
+  // Prefer videos that contain "highlight" or "race edit" in their title
+  const highlighted = items.filter(v => /highlight|race edit|best of|top \d/i.test(v.title));
+  const videos = (highlighted.length >= 4 ? highlighted : items).slice(0, 20);
+
+  function extractVideoId(item) {
+    const fromLink = item.link?.match(/[?&]v=([^&]+)/)?.[1];
+    const fromGuid = item.guid?.match(/[?&]v=([^&]+)/)?.[1]
+                  || item.guid?.match(/video\/([^?&/]+)/)?.[1];
+    return fromLink || fromGuid || '';
+  }
+
+  const cards = videos.map(item => {
+    const videoId = extractVideoId(item);
+    if (!videoId) return '';
+    const d   = new Date(item.pubDate);
+    const ago = timeAgo(d);
+    return `
+      <div class="highlight-card">
+        <div class="highlight-embed">
+          <iframe
+            src="https://www.youtube.com/embed/${videoId}?rel=0"
+            title="${item.title.replace(/"/g, '&quot;')}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+        </div>
+        <div class="highlight-info">
+          <div class="highlight-title">${item.title}</div>
+          <div class="highlight-date">${ago}</div>
+          <a class="highlight-yt-link" href="${item.link}" target="_blank" rel="noopener">▶ Watch on YouTube</a>
+        </div>
+      </div>`;
+  }).filter(Boolean).join('');
+
+  document.getElementById('highlights-content').innerHTML = `
+    <div class="section-header">
+      <span class="section-title">Race Highlights</span>
+      <span class="section-meta">Formula 1 YouTube · ${videos.length} videos</span>
+    </div>
+    <div class="highlights-grid">${cards}</div>`;
 }
 
 // ════════════════════════════════════════════════
