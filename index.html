@@ -692,6 +692,214 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* ── Race Round Navigation ── */
+    .race-nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .race-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .race-nav-btn:hover:not(:disabled) {
+      border-color: var(--f1-red);
+      color: var(--text);
+      background: #1e1e1e;
+    }
+
+    .race-nav-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+
+    .race-nav-btn.nav-right { justify-content: flex-end; }
+
+    .nav-arrow { font-size: 14px; flex-shrink: 0; }
+
+    .nav-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .race-nav-indicator {
+      flex-shrink: 0;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+      padding: 0 10px;
+      white-space: nowrap;
+    }
+
+    /* ── Track Times Tab ── */
+    .track-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .track-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #1a1a1a;
+    }
+
+    .track-flag-big { font-size: 26px; flex-shrink: 0; }
+
+    .track-race-name {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .track-circuit-name {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .track-round-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--f1-red);
+      text-transform: uppercase;
+    }
+
+    .track-round-date {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .track-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .track-year-col {
+      background: var(--bg);
+      padding: 14px 16px;
+    }
+
+    .track-year-col.is-current {
+      background: #0d1410;
+    }
+
+    .track-year-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .year-live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #2ecc71;
+      animation: pulse 1.5s infinite;
+      flex-shrink: 0;
+    }
+
+    .track-stat { margin-bottom: 12px; }
+    .track-stat:last-child { margin-bottom: 0; }
+
+    .track-stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .track-time {
+      font-size: 16px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      color: #f0f0f0;
+      letter-spacing: 0.3px;
+    }
+
+    .track-time.pending {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-style: italic;
+      font-family: inherit;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .track-driver-line {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .track-team-bar {
+      display: inline-block;
+      width: 3px;
+      height: 11px;
+      border-radius: 1px;
+      flex-shrink: 0;
+    }
+
+    .track-new-circuit {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-style: italic;
+      padding: 8px 0;
+    }
+
+    .track-upcoming-tag {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 1px 5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      vertical-align: middle;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       header { padding: 12px 16px; }
@@ -746,6 +954,9 @@
   <div class="tab" onclick="switchTab('provisional')" id="tab-provisional">
     <span class="tab-icon">⚡</span>Provisional
   </div>
+  <div class="tab" onclick="switchTab('track')" id="tab-track">
+    <span class="tab-icon">⏱</span>Track Times
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -771,6 +982,11 @@
   <!-- PROVISIONAL TAB -->
   <div class="tab-panel" id="panel-provisional">
     <div id="provisional-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading provisional standings…</p></div></div>
+  </div>
+
+  <!-- TRACK TIMES TAB -->
+  <div class="tab-panel" id="panel-track">
+    <div id="track-content"><div class="spinner-wrap"><div class="spinner"></div><p>Loading track times…</p></div></div>
   </div>
 
 </div>
@@ -847,15 +1063,28 @@ let liveSessionData    = null;
 let liveOpenF1Drivers  = {};   // driver_number → OpenF1 driver object
 let livePositions      = {};   // driver_number → latest position object
 
+// Round navigation state
+let seasonRaces          = [];   // all Race objects for the current season
+let currentRound         = null; // round number currently shown in the Race tab
+let latestCompletedRound = null; // highest round whose race is in the past
+
 // ════════════════════════════════════════════════
 //  TAB SWITCHING
 // ════════════════════════════════════════════════
+
+let trackTimesLoaded = false;
 
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   document.getElementById('panel-' + tab).classList.add('active');
+
+  // Lazy-load track times only when the tab is first opened
+  if (tab === 'track' && !trackTimesLoaded) {
+    trackTimesLoaded = true;
+    loadTrackTimes().catch(e => setError('track-content', e.message));
+  }
 }
 
 // ════════════════════════════════════════════════
@@ -925,6 +1154,19 @@ function timeAgo(d) {
 // ════════════════════════════════════════════════
 
 async function loadLiveRace() {
+  // Fetch season schedule once — needed to power round navigation
+  if (!seasonRaces.length) {
+    try {
+      const sd = await fetchJSON(`${JOLPICA_BASE}/current.json`);
+      seasonRaces = sd?.MRData?.RaceTable?.Races || [];
+      const today = new Date();
+      const done  = seasonRaces.filter(r => new Date(r.date + 'T20:00:00Z') < today);
+      latestCompletedRound = done.length > 0 ? parseInt(done[done.length - 1].round) : null;
+      // Seed currentRound on first page load only
+      if (currentRound === null) currentRound = latestCompletedRound;
+    } catch(e) { /* schedule is non-critical; nav will be hidden */ }
+  }
+
   try {
     // Get latest session
     const sessions = await fetchJSON(`${OPENF1_BASE}/sessions?session_key=latest`);
@@ -1039,14 +1281,19 @@ async function loadLastRaceResult() {
   liveOpenF1Drivers = {};
   livePositions     = {};
 
-  const data = await fetchJSON(`${JOLPICA_BASE}/current/last/results.json`);
+  // Use the tracked round, or fall back to the API's "last" shortcut
+  const roundPath = currentRound ? `current/${currentRound}` : 'current/last';
+  const data = await fetchJSON(`${JOLPICA_BASE}/${roundPath}/results.json`);
   const race = data?.MRData?.RaceTable?.Races?.[0];
   if (!race) throw new Error('No race results');
 
+  // Keep currentRound in sync with what the API returned
+  currentRound = parseInt(race.round);
+
   renderLastRace(race);
 
-  // Also load next race schedule
-  loadNextRace();
+  // Show the next-race countdown only when viewing the latest completed round
+  if (currentRound === latestCompletedRound) loadNextRace();
 }
 
 function renderLastRace(race) {
@@ -1083,6 +1330,7 @@ function renderLastRace(race) {
 
   document.getElementById('race-content').innerHTML = `
     <div id="next-race-wrap"></div>
+    ${buildRaceNavBar(parseInt(race.round))}
     <div class="race-header-card">
       <div class="race-round">Round ${race.round}</div>
       <div class="race-info">
@@ -1107,6 +1355,65 @@ function renderLastRace(race) {
       </thead>
       <tbody>${tbody}</tbody>
     </table>`;
+}
+
+// ════════════════════════════════════════════════
+//  ROUND NAVIGATION
+// ════════════════════════════════════════════════
+
+function buildRaceNavBar(roundNum) {
+  if (!seasonRaces.length || !roundNum) return '';
+
+  const total    = seasonRaces.length;
+  const idx      = seasonRaces.findIndex(r => parseInt(r.round) === roundNum);
+  const prevRace = idx > 0               ? seasonRaces[idx - 1] : null;
+  const nextRace = idx < total - 1       ? seasonRaces[idx + 1] : null;
+
+  // Can only go forward to already-completed rounds
+  const canFwd = nextRace !== null
+              && latestCompletedRound !== null
+              && parseInt(nextRace.round) <= latestCompletedRound;
+
+  const shortGP = r => r.raceName.replace(' Grand Prix', ' GP');
+
+  return `
+    <div class="race-nav-bar">
+      <button class="race-nav-btn"
+              onclick="navigateRound(-1)"
+              ${prevRace ? '' : 'disabled'}
+              title="${prevRace ? prevRace.raceName : 'No earlier race'}">
+        <span class="nav-arrow">←</span>
+        <span class="nav-label">${prevRace ? shortGP(prevRace) : ''}</span>
+      </button>
+      <div class="race-nav-indicator">Round ${roundNum} / ${total}</div>
+      <button class="race-nav-btn nav-right"
+              onclick="navigateRound(1)"
+              ${canFwd ? '' : 'disabled'}
+              title="${canFwd && nextRace ? nextRace.raceName : 'No later completed race'}">
+        <span class="nav-label">${canFwd && nextRace ? shortGP(nextRace) : ''}</span>
+        <span class="nav-arrow">→</span>
+      </button>
+    </div>`;
+}
+
+function navigateRound(delta) {
+  const base = currentRound ?? latestCompletedRound ?? 1;
+  const next = base + delta;
+  if (next < 1) return;
+  if (latestCompletedRound !== null && next > latestCompletedRound) return;
+
+  currentRound = next;
+
+  // Clear the live globals — we're looking at history now
+  liveSessionData   = null;
+  liveOpenF1Drivers = {};
+  livePositions     = {};
+
+  // Show a spinner while fetching
+  document.getElementById('race-content').innerHTML =
+    `<div class="spinner-wrap"><div class="spinner"></div><p>Loading Round ${next}…</p></div>`;
+
+  loadLastRaceResult().catch(e => setError('race-content', e.message));
 }
 
 // ════════════════════════════════════════════════
@@ -1500,6 +1807,184 @@ function renderProvisionalStandings(drivers, constructors, isSprint) {
       </thead>
       <tbody>${consRows}</tbody>
     </table>`;
+}
+
+// ════════════════════════════════════════════════
+//  TRACK TIMES
+// ════════════════════════════════════════════════
+
+async function loadTrackTimes() {
+  const currYear = new Date().getFullYear();
+  const prevYear = currYear - 1;
+
+  const [schedule, flCurr, flPrev, qualiCurr, qualiPrev] = await Promise.all([
+    fetchJSON(`${JOLPICA_BASE}/current.json`),
+    fetchJSON(`${JOLPICA_BASE}/current/fastest/1/results.json?limit=30`),
+    fetchJSON(`${JOLPICA_BASE}/${prevYear}/fastest/1/results.json?limit=30`),
+    fetchJSON(`${JOLPICA_BASE}/current/qualifying.json?limit=30`),
+    fetchJSON(`${JOLPICA_BASE}/${prevYear}/qualifying.json?limit=30`),
+  ]);
+
+  const races = schedule?.MRData?.RaceTable?.Races || [];
+  if (!races.length) throw new Error('No schedule data');
+
+  // Build fastest-lap lookup: circuitId → { time, driver, team, conId }
+  function buildFLLookup(data) {
+    const map = {};
+    for (const race of data?.MRData?.RaceTable?.Races || []) {
+      const cId = race.Circuit?.circuitId;
+      const r   = race.Results?.[0];
+      if (cId && r?.FastestLap?.Time?.time) {
+        map[cId] = {
+          time:   r.FastestLap.Time.time,
+          lap:    r.FastestLap.lap,
+          driver: abbrevName(r.Driver),
+          team:   r.Constructor?.name   || '',
+          conId:  r.Constructor?.constructorId || '',
+        };
+      }
+    }
+    return map;
+  }
+
+  // Build qualifying pole lookup: circuitId → { time, driver, team, conId }
+  function buildPoleLookup(data) {
+    const map = {};
+    for (const race of data?.MRData?.RaceTable?.Races || []) {
+      const cId = race.Circuit?.circuitId;
+      const p1  = (race.QualifyingResults || []).find(r => r.position === '1');
+      if (cId && p1) {
+        map[cId] = {
+          time:   p1.Q3 || p1.Q2 || p1.Q1 || '—',
+          driver: abbrevName(p1.Driver),
+          team:   p1.Constructor?.name   || '',
+          conId:  p1.Constructor?.constructorId || '',
+        };
+      }
+    }
+    return map;
+  }
+
+  renderTrackTimes(
+    races,
+    buildFLLookup(flCurr),   buildFLLookup(flPrev),
+    buildPoleLookup(qualiCurr), buildPoleLookup(qualiPrev),
+    currYear, prevYear
+  );
+}
+
+// Shorten driver name to "F. Lastname"
+function abbrevName(driver) {
+  if (!driver) return '';
+  const first = driver.givenName?.[0] || '';
+  const last  = driver.familyName || '';
+  return first ? `${first}. ${last}` : last;
+}
+
+function renderTrackTimes(races, flCurr, flPrev, poleCurr, polePrev, currYear, prevYear) {
+  const today = new Date();
+
+  function timeBlock(entry, done, isNewCircuit) {
+    if (isNewCircuit) {
+      return `<div class="track-time pending">New circuit in ${currYear}</div>`;
+    }
+    if (!done) {
+      return `<div class="track-time pending">Upcoming <span class="track-upcoming-tag">scheduled</span></div>`;
+    }
+    if (!entry) {
+      return `<div class="track-time pending">No data</div>`;
+    }
+    const color = teamColor(entry.conId);
+    return `
+      <div class="track-time">${entry.time}</div>
+      <div class="track-driver-line">
+        <span class="track-team-bar" style="background:${color}"></span>
+        <span>${entry.driver}</span>
+        <span style="color:${color};font-weight:600">${entry.team}</span>
+      </div>`;
+  }
+
+  const cards = races.map(race => {
+    const cId       = race.Circuit?.circuitId || '';
+    const flag      = circuitFlag(cId);
+    const raceDate  = new Date(race.date + 'T14:00:00Z');  // ~race start time
+    // Qualifying is typically the day before the race
+    const qualiDate = new Date(race.date + 'T12:00:00Z');
+    qualiDate.setDate(qualiDate.getDate() - 1);
+
+    const raceDone  = raceDate  < today;
+    const qualiDone = qualiDate < today;
+
+    // Was this circuit on the previous year's calendar?
+    const hadPrevYear = (flPrev[cId] !== undefined) || (polePrev[cId] !== undefined);
+    const isNewCircuit = !hadPrevYear;
+
+    const prevPole = polePrev[cId];
+    const currPole = poleCurr[cId];
+    const prevFL   = flPrev[cId];
+    const currFL   = flCurr[cId];
+
+    // Current year live dot — shown if qualifying or race has happened
+    const showLiveDot = qualiDone || raceDone;
+
+    return `
+      <div class="track-card">
+        <div class="track-card-header">
+          <div class="track-flag-big">${flag}</div>
+          <div style="flex:1;min-width:0">
+            <div class="track-race-name">${race.raceName}</div>
+            <div class="track-circuit-name">${race.Circuit?.circuitName || ''} · ${race.Circuit?.Location?.country || ''}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div class="track-round-tag">Round ${race.round}</div>
+            <div class="track-round-date">${formatDate(race.date)}</div>
+          </div>
+        </div>
+        <div class="track-grid">
+
+          <!-- PREVIOUS YEAR -->
+          <div class="track-year-col">
+            <div class="track-year-label">${prevYear}</div>
+            <div class="track-stat">
+              <div class="track-stat-label">🏆 Qualifying Pole</div>
+              ${isNewCircuit
+                ? '<div class="track-time pending">No previous race</div>'
+                : timeBlock(prevPole, true, false)}
+            </div>
+            <div class="track-stat">
+              <div class="track-stat-label">⚡ Fastest Race Lap</div>
+              ${isNewCircuit
+                ? '<div class="track-time pending">No previous race</div>'
+                : timeBlock(prevFL, true, false)}
+            </div>
+          </div>
+
+          <!-- CURRENT YEAR -->
+          <div class="track-year-col is-current">
+            <div class="track-year-label">
+              ${currYear}
+              ${showLiveDot ? '<span class="year-live-dot"></span>' : ''}
+            </div>
+            <div class="track-stat">
+              <div class="track-stat-label">🏆 Qualifying Pole</div>
+              ${timeBlock(currPole, qualiDone, false)}
+            </div>
+            <div class="track-stat">
+              <div class="track-stat-label">⚡ Fastest Race Lap</div>
+              ${timeBlock(currFL, raceDone, false)}
+            </div>
+          </div>
+
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('track-content').innerHTML = `
+    <div class="section-header">
+      <span class="section-title">Qualifying Pole & Fastest Race Lap</span>
+      <span class="section-meta">${currYear} vs ${prevYear} · ${races.length} rounds</span>
+    </div>
+    ${cards}`;
 }
 
 // ════════════════════════════════════════════════
