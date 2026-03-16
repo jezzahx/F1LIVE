@@ -1492,8 +1492,40 @@ let consChartInst      = null;
 
 async function getSeasonResults() {
   if (!seasonResultsCache) {
-    const data = await fetchJSON(`${JOLPICA_BASE}/current/results.json?limit=500`);
-    seasonResultsCache = data?.MRData?.RaceTable?.Races || [];
+    // Fetch race results and sprint results in parallel
+    const [raceData, sprintData] = await Promise.all([
+      fetchJSON(`${JOLPICA_BASE}/current/results.json?limit=500`),
+      fetchJSON(`${JOLPICA_BASE}/current/sprint.json?limit=500`),
+    ]);
+    const races = raceData?.MRData?.RaceTable?.Races || [];
+    const sprints = sprintData?.MRData?.RaceTable?.Races || [];
+
+    // Build sprint points lookup: round → driverId → points
+    const sprintPts = {};
+    for (const sprint of sprints) {
+      const rnd = parseInt(sprint.round);
+      sprintPts[rnd] = {};
+      for (const result of sprint.SprintResults || []) {
+        const dId = result.Driver?.driverId;
+        if (dId) sprintPts[rnd][dId] = parseFloat(result.points || 0);
+      }
+    }
+
+    // Merge sprint points into the corresponding race round results
+    for (const race of races) {
+      const rnd = parseInt(race.round);
+      if (sprintPts[rnd]) {
+        for (const result of race.Results || []) {
+          const dId = result.Driver?.driverId;
+          if (dId && sprintPts[rnd][dId]) {
+            // Add sprint points on top of grand prix points
+            result.points = String(parseFloat(result.points || 0) + sprintPts[rnd][dId]);
+          }
+        }
+      }
+    }
+
+    seasonResultsCache = races;
   }
   return seasonResultsCache;
 }
