@@ -1394,6 +1394,191 @@
     .blt-normal   { color: var(--text-muted); }
     .blt-empty    { color: var(--text-dim); }
     .blt-lap-rank { font-size: 10px; color: var(--text-dim); margin-left: 3px; }
+
+    /* ── Modal / Lightbox ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #1a1a24;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 24px 22px 20px;
+      width: min(520px, 100%);
+      max-height: 88vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.7);
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(255,255,255,0.07);
+      border: none;
+      color: var(--text-muted);
+      font-size: 17px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 5px 9px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 18px;
+      padding-right: 32px;
+    }
+    .modal-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: 18px 0 10px;
+    }
+    /* Stats grid for driver profile */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 14px 10px 12px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    /* API status panel */
+    .api-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+    .api-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .api-panel-name { font-weight: 700; font-size: 13px; color: #fff; }
+    .api-panel-url { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+    .api-status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .api-status-dot.ok  { background: #2ecc71; box-shadow: 0 0 6px #2ecc7180; }
+    .api-status-dot.err { background: #e74c3c; }
+    .api-status-dot.pending { background: #888; }
+    .api-endpoints {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .api-ep-tag {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-muted);
+    }
+    .live-badge { cursor: pointer; }
+    .live-badge:hover .live-status-text { color: #fff; }
+    /* Driver profile header strip */
+    .driver-profile-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      margin-bottom: 4px;
+    }
+    .driver-profile-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+    }
+    .driver-profile-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .modal-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 13px;
+      padding: 20px 0;
+    }
+    .modal-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-top-color: var(--f1-red);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .clickable-driver { cursor: pointer; }
+    .clickable-driver:hover { text-decoration: underline; color: #fff; }
+
+    /* ── Tyre history ── */
+    .tyre-history-cell { text-align: center; white-space: nowrap; }
+    .tyre-dot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0;
+      vertical-align: middle;
+    }
+    .tyre-arrow {
+      display: inline-block;
+      font-size: 9px;
+      color: var(--text-dim);
+      margin: 0 1px;
+      vertical-align: middle;
+    }
+    .tyre-laps {
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-left: 1px;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
@@ -1410,21 +1595,37 @@
     </div>
   </div>
   <div class="header-right">
-    <div class="live-badge">
+    <div class="live-badge" onclick="openAPIStatus()" title="View data sources">
       <div class="live-dot" id="live-dot"></div>
-      <span id="live-status-text">Loading…</span>
+      <span id="live-status-text" class="live-status-text">Loading…</span>
     </div>
     <div class="last-updated" id="last-updated"></div>
     <button class="refresh-btn" id="refresh-btn" onclick="loadAll()">↻ Refresh</button>
   </div>
 </header>
 
+<!-- ── API Status Lightbox ── -->
+<div class="modal-overlay" id="api-modal" onclick="if(event.target===this)closeModal('api-modal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('api-modal')">✕</button>
+    <div id="api-modal-content"><div class="modal-loading"><div class="modal-spinner"></div>Loading…</div></div>
+  </div>
+</div>
+
+<!-- ── Driver / Constructor Profile Lightbox ── -->
+<div class="modal-overlay" id="profile-modal" onclick="if(event.target===this)closeModal('profile-modal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('profile-modal')">✕</button>
+    <div id="profile-modal-content"><div class="modal-loading"><div class="modal-spinner"></div>Loading…</div></div>
+  </div>
+</div>
+
 <!-- ═══════════════════════════════════════
      TABS
 ══════════════════════════════════════════ -->
 <div class="tabs-wrapper">
   <div class="tab active" onclick="switchTab('race')" id="tab-race">
-    <span class="tab-icon">🏁</span>Race
+    <span class="tab-icon">🏁</span>Races
   </div>
   <div class="tab" onclick="switchTab('drivers')" id="tab-drivers">
     <span class="tab-icon">🏎</span>Drivers
@@ -1509,6 +1710,61 @@
 
 const JOLPICA_BASE = 'https://api.jolpi.ca/ergast/f1';
 const OPENF1_BASE  = 'https://api.openf1.org/v1';
+
+// ── Championship counts — used as guaranteed fallback when API data is missing ──
+// Driver IDs match Jolpica/Ergast driverId strings.
+const KNOWN_DRIVER_CHAMPS = {
+  'hamilton':    7,  // 2008 2014 2015 2017 2018 2019 2020
+  'schumacher':  7,  // 1994 1995 2000 2001 2002 2003 2004 (Michael)
+  'fangio':      5,  // 1951 1954 1955 1956 1957
+  'vettel':      4,  // 2010 2011 2012 2013
+  'max_verstappen': 4,  // 2021 2022 2023 2024  (Jolpica driverId)
+  'verstappen':     4,  // alias fallback
+  'norris':         1,  // 2025
+  'prost':       4,  // 1985 1986 1989 1993
+  'senna':       3,  // 1988 1990 1991
+  'lauda':       3,  // 1975 1977 1984
+  'stewart':     3,  // 1969 1971 1973
+  'piquet':      3,  // 1981 1983 1987
+  'brabham':     3,  // 1959 1960 1966
+  'ascari':      2,  // 1952 1953
+  'clark':       2,  // 1963 1965
+  'hill':        2,  // Damon Hill: 1996 + Graham Hill: 1962 1968 — driverId 'hill' = Damon
+  'hill_g':      2,  // Graham Hill if separate
+  'hakkinen':    2,  // 1998 1999
+  'fittipaldi':  2,  // 1972 1974
+  'alonso':      2,  // 2005 2006
+  'mansell':     1,  // 1992
+  'button':      1,  // 2009
+  'raikkonen':   1,  // 2007
+  'nico_rosberg':1,  // 2016
+  'rosberg':     1,  // catches Nico if stored as 'rosberg'
+  'surtees':     1,  // 1964
+  'rindt':       1,  // 1970 (posthumous)
+  'hawthorn':    1,  // 1958
+  'scheckter':   1,  // 1979
+  'jones':       1,  // 1980
+  'villeneuve':  1,  // 1997 (Jacques)
+  'hill_d':      1,  // Damon Hill 1996 if different ID
+};
+
+// Constructor IDs match Jolpica/Ergast constructorId strings.
+const KNOWN_CONSTRUCTOR_CHAMPS = {
+  'ferrari':     16, // 1961 1964 1975–77 1979 1982–83 1999–2004 2007–08
+  'williams':     9, // 1980–81 1986–87 1992–94 1996–97
+  'mclaren':      9, // 1974 1984–85 1988–91 1998–99
+  'mercedes':     8, // 2014–21
+  'lotus':        7, // 1963 1965 1968 1970 1972–73 1978
+  'red_bull':     6, // 2010–13 2022–23
+  'brabham':      2, // 1966–67
+  'benetton':     2, // 1994–95
+  'renault':      2, // 2005–06
+  'cooper':       2, // 1959–60
+  'tyrrell':      1, // 1971
+  'brawn':        1, // 2009
+  'vanwall':      1, // 1958
+  'bhr':          1, // BRM 1962
+};
 
 const TEAM_COLORS = {
   'red_bull':       '#3671C6',
@@ -1828,6 +2084,35 @@ async function renderLivePositions(session) {
 }
 
 // ════════════════════════════════════════════════
+//  TYRE UTILS
+// ════════════════════════════════════════════════
+
+const TYRE_STYLE = {
+  SOFT:         { bg: '#e8002d', text: '#fff', abbr: 'S' },
+  MEDIUM:       { bg: '#ffd700', text: '#111', abbr: 'M' },
+  HARD:         { bg: '#e8e8e8', text: '#111', abbr: 'H' },
+  INTERMEDIATE: { bg: '#39b54a', text: '#fff', abbr: 'I' },
+  WET:          { bg: '#0067ff', text: '#fff', abbr: 'W' },
+};
+
+function tyrePills(stints) {
+  if (!stints || !stints.length) return `<span style="color:var(--text-dim)">—</span>`;
+  return stints.map((s, i) => {
+    const t = TYRE_STYLE[s.compound] || { bg: '#555', text: '#fff', abbr: '?' };
+    const laps = (s.lap_end && s.lap_start)
+      ? s.lap_end - s.lap_start + 1
+      : null;
+    const title = [
+      s.compound || '?',
+      laps ? `${laps} laps` : '',
+      s.tyre_age_at_start ? `Age: ${s.tyre_age_at_start}` : '',
+    ].filter(Boolean).join(' · ');
+    const arrow = i > 0 ? `<span class="tyre-arrow">›</span>` : '';
+    return `${arrow}<span class="tyre-dot" style="background:${t.bg};color:${t.text}" title="${title}">${t.abbr}</span>${laps ? `<span class="tyre-laps">${laps}</span>` : ''}`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════
 //  LAST RACE RESULT (Jolpica / Ergast)
 // ════════════════════════════════════════════════
 
@@ -1846,15 +2131,46 @@ async function loadLastRaceResult() {
   // Keep currentRound in sync with what the API returned
   currentRound = parseInt(race.round);
 
-  renderLastRace(race);
+  // Fetch tyre stints from OpenF1 in parallel (non-blocking — empty map on failure)
+  const stints = await loadRaceStints(race).catch(() => ({}));
+
+  renderLastRace(race, stints);
 
   // Show the next-race countdown only when viewing the latest completed round
   if (currentRound === latestCompletedRound) loadNextRace();
 }
 
-function renderLastRace(race) {
+// Fetch per-driver tyre stint history from OpenF1 for a given Jolpica race object.
+// Returns { [driver_number]: [ { compound, stint_number, lap_start, lap_end, tyre_age_at_start }, … ] }
+async function loadRaceStints(race) {
+  const year      = race.season || new Date().getFullYear();
+  const raceDate  = race.date;  // "YYYY-MM-DD"
+
+  // Find the matching OpenF1 Race session by year + date
+  const sessions  = await fetchJSON(`${OPENF1}/sessions?year=${year}&session_name=Race`);
+  const session   = (sessions || []).find(s => s.date_start?.startsWith(raceDate));
+  if (!session) return {};
+
+  const rawStints = await fetchJSON(`${OPENF1}/stints?session_key=${session.session_key}`);
+  if (!rawStints?.length) return {};
+
+  // Group by driver number, sorted by stint order
+  const map = {};
+  for (const s of rawStints) {
+    const dn = String(s.driver_number);
+    if (!map[dn]) map[dn] = [];
+    map[dn].push(s);
+  }
+  for (const dn of Object.keys(map)) {
+    map[dn].sort((a, b) => (a.stint_number || 0) - (b.stint_number || 0));
+  }
+  return map;
+}
+
+function renderLastRace(race, stints = {}) {
   const results = race.Results || [];
   const flag = circuitFlag(race.Circuit?.circuitId || '');
+  const hasStints = Object.keys(stints).length > 0;
 
   const tbody = results.map(r => {
     const pos = parseInt(r.position);
@@ -1870,19 +2186,28 @@ function renderLastRace(race) {
 
     const pts = r.points !== '0' ? `<span style="color:#f0f0f0;font-weight:700">${r.points}</span>` : `<span style="color:var(--text-dim)">—</span>`;
 
+    // Tyre history: match by car number (r.number from Jolpica = driver_number in OpenF1)
+    const driverStints = stints[String(r.number)] || [];
+    const tyreHtml = hasStints ? `<td class="hide-mobile tyre-history-cell">${tyrePills(driverStints)}</td>` : '';
+
     return `<tr class="${pos <= 3 ? 'rank-' + pos : ''}">
       <td>${medalOrPos(pos)}</td>
       <td>
         <span class="driver-flag">${dFlag}</span>
-        <span class="driver-name">${r.Driver?.givenName} ${r.Driver?.familyName}</span>
+        <span class="driver-name clickable-driver" onclick="openDriverProfile('${r.Driver?.driverId}','${r.Driver?.givenName} ${r.Driver?.familyName}','${conId}')">${r.Driver?.givenName} ${r.Driver?.familyName}</span>
         <span class="driver-code">${r.Driver?.code || ''}</span>
         ${isFastest ? '<br><span class="fastest-lap">⚡ Fastest Lap</span>' : ''}
       </td>
       <td class="hide-mobile"><span class="constructor-pill" style="background:${color}20;color:${color};border:1px solid ${color}40">${r.Constructor?.name || '—'}</span></td>
       <td class="hide-mobile" style="text-align:right">${timeOrStatus}</td>
+      ${tyreHtml}
       <td style="text-align:right">${pts}</td>
     </tr>`;
   }).join('');
+
+  const tyreHeader = hasStints
+    ? `<th class="hide-mobile" style="text-align:center">Tyres</th>`
+    : '';
 
   document.getElementById('race-content').innerHTML = `
     <div id="next-race-wrap"></div>
@@ -1897,7 +2222,7 @@ function renderLastRace(race) {
     </div>
     <div class="section-header">
       <span class="section-title">Race Result</span>
-      <span class="section-meta">${results.length} classified</span>
+      <span class="section-meta">${results.length} classified${hasStints ? ' · tyre data via OpenF1' : ''}</span>
     </div>
     <table class="results-table">
       <thead>
@@ -1906,6 +2231,7 @@ function renderLastRace(race) {
           <th>Driver</th>
           <th class="hide-mobile">Team</th>
           <th class="hide-mobile" style="text-align:right">Time / Gap</th>
+          ${tyreHeader}
           <th style="text-align:right">PTS</th>
         </tr>
       </thead>
@@ -2292,7 +2618,7 @@ async function loadDriverStandings() {
         <div style="display:flex;align-items:center">
           <div class="team-color-bar" style="background:${color}"></div>
           <div>
-            <div><span class="driver-flag">${dFlag}</span><span class="driver-name">${driver.givenName} ${driver.familyName}</span> <span class="driver-code">${driver.code || ''}</span></div>
+            <div><span class="driver-flag">${dFlag}</span><span class="driver-name clickable-driver" onclick="openDriverProfile('${driver.driverId}','${driver.givenName} ${driver.familyName}','${cons.constructorId||''}')">${driver.givenName} ${driver.familyName}</span> <span class="driver-code">${driver.code || ''}</span></div>
             <div style="font-size:11px;color:var(--text-muted);margin-top:2px;margin-left:26px">${cons.name || ''}</div>
           </div>
         </div>
@@ -2362,7 +2688,7 @@ async function loadConstructorStandings() {
         <div class="constructor-row">
           <div class="constructor-color-block" style="background:${color}"></div>
           <div>
-            <div class="driver-name">${cons.name || 'Unknown'}</div>
+            <div class="driver-name clickable-driver" onclick="openConstructorProfile('${cons.constructorId}','${(cons.name||'Unknown').replace(/'/g,"&#39;")}','${color}')">${cons.name || 'Unknown'}</div>
             <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${cFlag} ${cons.nationality || ''}</div>
           </div>
         </div>
@@ -2559,7 +2885,7 @@ function renderProvisionalStandings(drivers, constructors, isSprint) {
           <div>
             <div>
               <span class="driver-flag">${dFlag}</span>
-              <span class="driver-name">${driver.givenName} ${driver.familyName}</span>
+              <span class="driver-name clickable-driver" onclick="openDriverProfile('${driver.driverId}','${driver.givenName} ${driver.familyName}','${cons.constructorId||''}')">${driver.givenName} ${driver.familyName}</span>
               <span class="driver-code">${driver.code || ''}</span>
             </div>
             <div style="font-size:11px;color:var(--text-muted);margin-top:3px;margin-left:26px">
@@ -2591,7 +2917,7 @@ function renderProvisionalStandings(drivers, constructors, isSprint) {
         <div class="constructor-row">
           <div class="constructor-color-block" style="background:${color}"></div>
           <div>
-            <div class="driver-name">${cons.name || 'Unknown'} ${racePtsBadge}</div>
+            <div class="driver-name clickable-driver" onclick="openConstructorProfile('${cons.constructorId}','${(cons.name||'Unknown').replace(/'/g,"&#39;")}','${color}')">${cons.name || 'Unknown'}</div><span style="margin-left:2px">${racePtsBadge}</span>
             <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${countryFlag(cons.nationality)} ${cons.nationality || ''}</div>
           </div>
         </div>
@@ -2748,11 +3074,13 @@ async function loadTrackTimes() {
     return map;
   }
 
+  // POLE_2025_FALLBACK applies to the prevYear column (2025 = last season)
+  // qualiCurr = current season (2026), qualiPrev = previous season (2025)
   renderTrackTimes(
     races,
     buildFLLookup(flCurr),   buildFLLookup(flPrev),
-    applyPoleFallback(buildPoleLookup(qualiCurr), POLE_2025_FALLBACK),
-    buildPoleLookup(qualiPrev),
+    buildPoleLookup(qualiCurr),
+    applyPoleFallback(buildPoleLookup(qualiPrev), POLE_2025_FALLBACK),
     currYear, prevYear
   );
 }
@@ -2896,6 +3224,17 @@ function setError(elId, message) {
 
 let loadCount = 0;
 
+// Tracks which APIs are healthy — populated by loadAll()
+const _apiStatus = {
+  jolpica: null,    // true = ok, false = degraded, null = pending
+  openf1:  null,
+  raceOk:  null,
+  driversOk: null,
+  constructorsOk: null,
+  provisionalOk: null,
+  lastUpdated: null,
+};
+
 async function loadAll() {
   loadCount++;
   const btn = document.getElementById('refresh-btn');
@@ -2910,7 +3249,11 @@ async function loadAll() {
 
   // Load race first (sets liveSessionData / livePositions globals),
   // then load all standings in parallel (provisional needs those globals)
-  await loadLiveRace().catch(e => { setError('race-content', e.message); });
+  let raceOk = true;
+  await loadLiveRace().catch(e => { setError('race-content', e.message); raceOk = false; });
+  _apiStatus.raceOk = raceOk;
+  // OpenF1 status: liveSessionData is set if openF1 was reached
+  _apiStatus.openf1 = (liveSessionData !== undefined);
 
   // Kick off news in the background immediately (no await — fire and forget)
   if (!newsLoaded) {
@@ -2923,6 +3266,12 @@ async function loadAll() {
     loadConstructorStandings().catch(e => { setError('constructors-content', e.message); throw e; }),
     loadProvisionalStandings().catch(e => { setError('provisional-content', e.message); throw e; }),
   ]);
+
+  _apiStatus.driversOk      = results[0].status === 'fulfilled';
+  _apiStatus.constructorsOk = results[1].status === 'fulfilled';
+  _apiStatus.provisionalOk  = results[2].status === 'fulfilled';
+  _apiStatus.jolpica = (_apiStatus.driversOk || _apiStatus.constructorsOk || raceOk);
+  _apiStatus.lastUpdated = new Date();
 
   const failed = results.filter(r => r.status === 'rejected').length;
   if (failed === 0) {
@@ -3913,6 +4262,251 @@ function showLiveIdle(msg) {
       <p>${msg || 'Live timing will appear here when a session is in progress.'}</p>
       <p style="margin-top:8px;font-size:12px">Data via <a href="https://openf1.org" target="_blank" style="color:var(--f1-red)">OpenF1 API</a> · ~5–10s delay</p>
     </div>`;
+}
+
+// ════════════════════════════════════════════════
+//  MODALS — API STATUS + DRIVER / CONSTRUCTOR PROFILES
+// ════════════════════════════════════════════════
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal('api-modal'); closeModal('profile-modal'); }
+});
+
+// ── API Status lightbox ──────────────────────────
+function openAPIStatus() {
+  const modal   = document.getElementById('api-modal');
+  const content = document.getElementById('api-modal-content');
+  modal.classList.add('open');
+
+  const dotHtml = ok => {
+    if (ok === null) return `<div class="api-status-dot pending"></div>`;
+    return ok ? `<div class="api-status-dot ok"></div>` : `<div class="api-status-dot err"></div>`;
+  };
+  const statusLabel = ok => ok === null ? 'Checking…' : ok ? 'Online' : 'Error';
+
+  const jolpicaEps = [
+    { name: 'Race Results',         ok: _apiStatus.raceOk },
+    { name: 'Driver Standings',     ok: _apiStatus.driversOk },
+    { name: 'Constructor Standings',ok: _apiStatus.constructorsOk },
+    { name: 'Qualifying Data',      ok: _apiStatus.jolpica },
+    { name: 'Season Schedule',      ok: _apiStatus.jolpica },
+    { name: 'Fastest Laps',         ok: _apiStatus.jolpica },
+  ];
+  const openf1Eps = [
+    { name: 'Live Session',         ok: _apiStatus.openf1 },
+    { name: 'Live Timing',          ok: _apiStatus.openf1 },
+    { name: 'Car Telemetry',        ok: _apiStatus.openf1 },
+    { name: 'Track Map',            ok: _apiStatus.openf1 },
+    { name: 'Team Radio',           ok: _apiStatus.openf1 },
+    { name: 'Race Control Msgs',    ok: _apiStatus.openf1 },
+  ];
+
+  const epTags = eps => eps.map(e => {
+    const c = e.ok === null ? 'var(--text-dim)' : e.ok ? '#2ecc71' : '#e74c3c';
+    const prefix = e.ok === null ? '' : e.ok ? '✓ ' : '✗ ';
+    return `<span class="api-ep-tag" style="color:${c}">${prefix}${e.name}</span>`;
+  }).join('');
+
+  const updated = _apiStatus.lastUpdated
+    ? _apiStatus.lastUpdated.toLocaleTimeString()
+    : 'Not yet loaded';
+
+  content.innerHTML = `
+    <div class="modal-title">📡 Data Sources</div>
+
+    <div class="api-panel">
+      <div class="api-panel-header">
+        <div>
+          <div class="api-panel-name">Jolpica F1 API</div>
+          <div class="api-panel-url">api.jolpi.ca/ergast/f1/ · Historical &amp; Season Data</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${dotHtml(_apiStatus.jolpica)}
+          <span style="font-size:11px;color:var(--text-muted)">${statusLabel(_apiStatus.jolpica)}</span>
+        </div>
+      </div>
+      <div class="api-endpoints">${epTags(jolpicaEps)}</div>
+    </div>
+
+    <div class="api-panel">
+      <div class="api-panel-header">
+        <div>
+          <div class="api-panel-name">OpenF1 API</div>
+          <div class="api-panel-url">api.openf1.org/v1/ · Live Timing &amp; Telemetry · ~5–10s delay</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${dotHtml(_apiStatus.openf1)}
+          <span style="font-size:11px;color:var(--text-muted)">${statusLabel(_apiStatus.openf1)}</span>
+        </div>
+      </div>
+      <div class="api-endpoints">${epTags(openf1Eps)}</div>
+    </div>
+
+    <div style="margin-top:14px;font-size:11px;color:var(--text-dim);display:flex;justify-content:space-between;align-items:center">
+      <span>Both APIs are free &amp; open — no authentication required</span>
+      <span>Last refresh: ${updated}</span>
+    </div>`;
+}
+
+// ── Driver Profile lightbox ───────────────────────
+async function openDriverProfile(driverId, name, conId) {
+  if (!driverId) return;
+  const modal   = document.getElementById('profile-modal');
+  const content = document.getElementById('profile-modal-content');
+  content.innerHTML = `<div class="modal-loading"><div class="modal-spinner"></div>Loading ${name}…</div>`;
+  modal.classList.add('open');
+
+  try {
+    const base = JOLPICA_BASE.replace(/\/$/, '');
+    // Query global championship-winner list then filter for this driver client-side.
+    // Driver-specific standings endpoints are unreliable on Jolpica; the global
+    // /driverstandings/1 endpoint is a simple, well-supported query.
+    const [winsD, p2D, p3D, polesD, allChampsD, fastD, driverD, seasonsD] = await Promise.all([
+      fetchJSON(`${base}/drivers/${driverId}/results/1.json?limit=0`).catch(() => null),
+      fetchJSON(`${base}/drivers/${driverId}/results/2.json?limit=0`).catch(() => null),
+      fetchJSON(`${base}/drivers/${driverId}/results/3.json?limit=0`).catch(() => null),
+      fetchJSON(`${base}/drivers/${driverId}/qualifying/1.json?limit=0`).catch(() => null),
+      fetchJSON(`${base}/driverstandings/1.json?limit=200`).catch(() => null),
+      fetchJSON(`${base}/drivers/${driverId}/fastest/1/results.json?limit=0`).catch(() => null),
+      fetchJSON(`${base}/drivers/${driverId}.json`).catch(() => null),
+      fetchJSON(`${base}/drivers/${driverId}/seasons.json?limit=0`).catch(() => null),
+    ]);
+
+    const wins     = parseInt(winsD?.MRData?.total   || 0);
+    const p2s      = parseInt(p2D?.MRData?.total     || 0);
+    const p3s      = parseInt(p3D?.MRData?.total     || 0);
+    const podiums  = wins + p2s + p3s;
+    const poles    = parseInt(polesD?.MRData?.total  || 0);
+    // Count seasons where this driver was champion — filter the global P1 list by driverId,
+    // then fall back to the hardcoded lookup if the API returns nothing.
+    const champSeasons = allChampsD?.MRData?.StandingsTable?.StandingsLists || [];
+    const apiChamps    = champSeasons
+                           .filter(sl => sl.DriverStandings?.[0]?.Driver?.driverId === driverId).length;
+    const champs       = apiChamps || KNOWN_DRIVER_CHAMPS[driverId] || 0;
+    const fastLaps = parseInt(fastD?.MRData?.total   || 0);
+    const seasons  = parseInt(seasonsD?.MRData?.total|| 0);
+    const dInfo    = driverD?.MRData?.DriverTable?.Drivers?.[0] || {};
+
+    const color    = conId ? teamColor(conId) : '#e10600';
+    const dFlag    = countryFlag(dInfo.nationality || '');
+    const dobYear  = dInfo.dateOfBirth ? new Date(dInfo.dateOfBirth).getFullYear() : '';
+    const dobFull  = dInfo.dateOfBirth
+      ? new Date(dInfo.dateOfBirth).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'})
+      : '';
+    const num      = dInfo.permanentNumber ? `#${dInfo.permanentNumber}` : '';
+
+    // 2025 standing from already-loaded data if available
+    let currentStanding = '';
+    try {
+      const stEl = document.getElementById('drivers-content');
+      if (stEl) {
+        const rows = stEl.querySelectorAll('tbody tr');
+        rows.forEach(tr => {
+          const span = tr.querySelector('.driver-name');
+          if (span && span.textContent.trim() === name) {
+            const pts   = tr.querySelectorAll('td')[3]?.textContent?.trim() || '';
+            const pos   = tr.querySelectorAll('td')[0]?.textContent?.trim() || '';
+            currentStanding = `P${pos} · ${pts} pts`;
+          }
+        });
+      }
+    } catch(_) {}
+
+    const stat = (val, label, emoji) => `
+      <div class="stat-card">
+        <div class="stat-value">${val}</div>
+        <div class="stat-label">${emoji} ${label}</div>
+      </div>`;
+
+    content.innerHTML = `
+      <div class="driver-profile-header">
+        <div style="width:6px;min-height:60px;background:${color};border-radius:3px;flex-shrink:0;align-self:stretch"></div>
+        <div>
+          <div class="driver-profile-name">${dFlag} ${dInfo.givenName || name.split(' ')[0]} ${dInfo.familyName || name.split(' ').slice(1).join(' ')}</div>
+          <div class="driver-profile-meta">
+            ${num}${num && dobFull ? ' · ' : ''}${dobFull}${dobYear ? ' (born '+dobYear+')' : ''}
+            ${dInfo.nationality ? ' · '+dInfo.nationality : ''}
+          </div>
+          ${currentStanding ? `<div style="margin-top:6px;font-size:12px;color:#fff;background:${color}22;border:1px solid ${color}44;padding:3px 10px;border-radius:20px;display:inline-block">2025: ${currentStanding}</div>` : ''}
+        </div>
+      </div>
+      <div class="modal-section-label">Career Statistics${seasons ? ' · '+seasons+' seasons' : ''}</div>
+      <div class="stats-grid">
+        ${stat(champs,   'Championships', '🏆')}
+        ${stat(wins,     'Wins',          '🥇')}
+        ${stat(podiums,  'Podiums',       '🏅')}
+        ${stat(poles,    'Pole Positions','🏁')}
+        ${stat(fastLaps, 'Fastest Laps',  '⚡')}
+      </div>`;
+  } catch(e) {
+    content.innerHTML = `<div style="color:var(--text-muted);padding:12px 0">Could not load driver profile: ${e.message}</div>`;
+  }
+}
+
+// ── Constructor Profile lightbox ──────────────────
+async function openConstructorProfile(consId, name, color) {
+  if (!consId) return;
+  const modal   = document.getElementById('profile-modal');
+  const content = document.getElementById('profile-modal-content');
+  content.innerHTML = `<div class="modal-loading"><div class="modal-spinner"></div>Loading ${name}…</div>`;
+  modal.classList.add('open');
+
+  try {
+    const base = JOLPICA_BASE.replace(/\/$/, '');
+    // Same approach as driver profile — query global constructor championship winners list,
+    // then filter for this constructor client-side.
+    const [winsD, p2D, p3D, polesD, allChampsD, fastD, seasonsD] = await Promise.all([
+      fetchJSON(`${base}/constructors/${consId}/results/1.json?limit=0`).catch(() => null),
+      fetchJSON(`${base}/constructors/${consId}/results/2.json?limit=0`).catch(() => null),
+      fetchJSON(`${base}/constructors/${consId}/results/3.json?limit=0`).catch(() => null),
+      fetchJSON(`${base}/constructors/${consId}/qualifying/1.json?limit=0`).catch(() => null),
+      fetchJSON(`${base}/constructorstandings/1.json?limit=200`).catch(() => null),
+      fetchJSON(`${base}/constructors/${consId}/fastest/1/results.json?limit=0`).catch(() => null),
+      fetchJSON(`${base}/constructors/${consId}/seasons.json?limit=0`).catch(() => null),
+    ]);
+
+    const wins     = parseInt(winsD?.MRData?.total   || 0);
+    const p2s      = parseInt(p2D?.MRData?.total     || 0);
+    const p3s      = parseInt(p3D?.MRData?.total     || 0);
+    const podiums  = wins + p2s + p3s;
+    const poles    = parseInt(polesD?.MRData?.total  || 0);
+    // Count seasons where this constructor was champion — API then hardcoded fallback
+    const champSeasons = allChampsD?.MRData?.StandingsTable?.StandingsLists || [];
+    const apiChamps    = champSeasons
+                           .filter(sl => sl.ConstructorStandings?.[0]?.Constructor?.constructorId === consId).length;
+    const champs       = apiChamps || KNOWN_CONSTRUCTOR_CHAMPS[consId] || 0;
+    const fastLaps = parseInt(fastD?.MRData?.total   || 0);
+    const seasons  = parseInt(seasonsD?.MRData?.total|| 0);
+    const teamColor_ = color || teamColor(consId);
+
+    const stat = (val, label, emoji) => `
+      <div class="stat-card">
+        <div class="stat-value">${val}</div>
+        <div class="stat-label">${emoji} ${label}</div>
+      </div>`;
+
+    content.innerHTML = `
+      <div class="driver-profile-header">
+        <div style="width:6px;min-height:60px;background:${teamColor_};border-radius:3px;flex-shrink:0;align-self:stretch"></div>
+        <div>
+          <div class="driver-profile-name">${name}</div>
+          <div class="driver-profile-meta">Constructor · F1 Team${seasons ? ' · '+seasons+' seasons' : ''}</div>
+        </div>
+      </div>
+      <div class="modal-section-label">All-Time Statistics</div>
+      <div class="stats-grid">
+        ${stat(champs,   'Championships', '🏆')}
+        ${stat(wins,     'Race Wins',     '🥇')}
+        ${stat(podiums,  'Podiums',       '🏅')}
+        ${stat(poles,    'Pole Positions','🏁')}
+        ${stat(fastLaps, 'Fastest Laps',  '⚡')}
+      </div>`;
+  } catch(e) {
+    content.innerHTML = `<div style="color:var(--text-muted);padding:12px 0">Could not load team profile: ${e.message}</div>`;
+  }
 }
 
 // ════════════════════════════════════════════════
