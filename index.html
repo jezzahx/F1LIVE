@@ -1815,6 +1815,46 @@ const KNOWN_DRIVER_CHAMPS = {
 };
 
 // Constructor IDs match Jolpica/Ergast constructorId strings.
+// ── Pole position counts — authoritative lookup to replace unreliable API data ─
+// Jolpica overcounts for drivers who raced during the sprint qualifying era (2021+)
+// by including sprint qualifying pole positions. This map uses verified counts.
+// Sources: statsf1.com, Wikipedia, official F1 records.
+// Values represent career totals to END of 2025. 2026 poles added via POLE_2026_CORRECTIONS.
+const KNOWN_DRIVER_POLES = {
+  'hamilton':             104,  // Lewis Hamilton
+  'michael_schumacher':    68,  // Michael Schumacher
+  'senna':                 65,  // Ayrton Senna
+  'vettel':                57,  // Sebastian Vettel
+  'max_verstappen':        48,  // Max Verstappen (confirmed statsf1.com as of early 2026)
+  'prost':                 33,  // Alain Prost
+  'clark':                 33,  // Jim Clark
+  'mansell':               32,  // Nigel Mansell
+  'nico_rosberg':          30,  // Nico Rosberg
+  'fangio':                29,  // Juan Manuel Fangio
+  'leclerc':               27,  // Charles Leclerc — confirmed statsf1.com
+  'hakkinen':              26,  // Mika Häkkinen
+  'alonso':                22,  // Fernando Alonso
+  'lauda':                 24,  // Niki Lauda
+  'piquet':                24,  // Nelson Piquet
+  'damon_hill':            20,  // Damon Hill
+  'raikkonen':             18,  // Kimi Räikkönen
+  'stewart':               17,  // Jackie Stewart
+  'norris':                16,  // Lando Norris (as of end 2025, excl. 2026)
+  'massa':                 16,  // Felipe Massa
+  'moss':                  16,  // Stirling Moss
+  'barrichello':           14,  // Rubens Barrichello
+  'webber':                13,  // Mark Webber
+  'montoya':               13,  // Juan Pablo Montoya
+  'graham_hill':           13,  // Graham Hill
+  'coulthard':             12,  // David Coulthard
+  'berger':                12,  // Gerhard Berger
+  'button':                 8,  // Jenson Button
+  'russell':                7,  // George Russell (as of end 2025; +1 Australia 2026 via corrections)
+  'sainz':                  6,  // Carlos Sainz (all at Ferrari)
+  'piastri':                6,  // Oscar Piastri (as of end 2025)
+  'rosberg':                5,  // Keke Rosberg
+};
+
 const KNOWN_CONSTRUCTOR_CHAMPS = {
   'ferrari':     16, // 1961 1964 1975–77 1979 1982–83 1999–2004 2007–08
   'williams':     9, // 1980–81 1986–87 1992–94 1996–97
@@ -4441,15 +4481,12 @@ async function openDriverProfile(driverId, name, conId) {
     // Query global championship-winner list then filter for this driver client-side.
     // Driver-specific standings endpoints are unreliable on Jolpica; the global
     // /driverstandings/1 endpoint is a simple, well-supported query.
-    const [winsD, p2D, p3D, polesD, gridPolesD, allChampsD, fastD, driverD, seasonsD] = await Promise.all([
+    const [winsD, p2D, p3D, polesD, allChampsD, fastD, driverD, seasonsD] = await Promise.all([
       fetchJSON(`${base}/drivers/${driverId}/results/1.json?limit=0`).catch(() => null),
       fetchJSON(`${base}/drivers/${driverId}/results/2.json?limit=0`).catch(() => null),
       fetchJSON(`${base}/drivers/${driverId}/results/3.json?limit=0`).catch(() => null),
-      // Full qualifying list for the drill-down — 2026 entries filtered client-side.
+      // Full qualifying list — used for the poles drill-down. 2026 entries filtered client-side.
       fetchJSON(`${base}/drivers/${driverId}/qualifying/1.json?limit=500`).catch(() => null),
-      // Grid P1 count: races where driver started from pole on the MAIN race grid.
-      // This naturally excludes sprint qualifying poles, giving the correct headline count.
-      fetchJSON(`${base}/drivers/${driverId}/grid/1/results.json?limit=0`).catch(() => null),
       fetchJSON(`${base}/driverstandings/1.json?limit=200`).catch(() => null),
       fetchJSON(`${base}/drivers/${driverId}/fastest/1/results.json?limit=0`).catch(() => null),
       fetchJSON(`${base}/drivers/${driverId}.json`).catch(() => null),
@@ -4460,11 +4497,13 @@ async function openDriverProfile(driverId, name, conId) {
     const p2s      = parseInt(p2D?.MRData?.total     || 0);
     const p3s      = parseInt(p3D?.MRData?.total     || 0);
     const podiums  = wins + p2s + p3s;
-    // Use grid/1 count (main race starts from pole) — excludes sprint qualifying poles.
-    // Strip any 2026 Jolpica grid data (unreliable) and add confirmed 2026 poles separately.
-    const gridPolesRaces  = (gridPolesD?.MRData?.RaceTable?.Races || []).filter(r => r.season !== '2026');
+    // Pole count: KNOWN_DRIVER_POLES is the authoritative source (statsf1.com-verified).
+    // Jolpica's qualifying/1 overcounts by including sprint qualifying poles since 2021.
+    // For drivers not in the lookup, fall back to the filtered qualifying list count.
+    // 2026 poles are added from POLE_2026_CORRECTIONS regardless of source.
+    const apiPolesCount   = (polesD?.MRData?.RaceTable?.Races || []).filter(r => r.season !== '2026').length;
     const poles2026       = Object.values(POLE_2026_CORRECTIONS).filter(c => c.driverId === driverId).length;
-    const poles           = gridPolesRaces.length + poles2026;
+    const poles           = (KNOWN_DRIVER_POLES[driverId] ?? apiPolesCount) + poles2026;
     // Count seasons where this driver was champion — filter the global P1 list by driverId,
     // then fall back to the hardcoded lookup if the API returns nothing.
     const champSeasons = allChampsD?.MRData?.StandingsTable?.StandingsLists || [];
