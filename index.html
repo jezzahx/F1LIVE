@@ -1474,6 +1474,61 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+    .stat-clickable {
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .stat-clickable:hover {
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.22);
+      transform: translateY(-1px);
+    }
+    .stat-drill {
+      font-size: 9px;
+      color: var(--accent);
+      margin-top: 5px;
+      letter-spacing: 0.4px;
+      opacity: 0.8;
+    }
+    .profile-back-btn {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .profile-back-btn:hover { background: rgba(255,255,255,0.14); }
+    .results-drill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .results-drill-list::-webkit-scrollbar { width: 4px; }
+    .results-drill-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius:2px; }
+    .result-item {
+      display: grid;
+      grid-template-columns: 28px 46px 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 7px;
+      font-size: 13px;
+    }
+    .result-item:hover { background: rgba(255,255,255,0.06); }
+    .result-pos  { font-size: 16px; line-height:1; }
+    .result-year { color: var(--text-muted); font-size: 12px; font-weight: 600; }
+    .result-race { color: #fff; font-weight: 500; }
+    .result-team { color: var(--text-muted); font-size: 11px; text-align:right; }
     /* API status panel */
     .api-panel {
       background: rgba(255,255,255,0.03);
@@ -1710,6 +1765,17 @@
 
 const JOLPICA_BASE = 'https://api.jolpi.ca/ergast/f1';
 const OPENF1_BASE  = 'https://api.openf1.org/v1';
+
+// ── Authoritative 2026 pole positions ────────────────────────────────────────
+// Jolpica's 2026 qualifying data is unreliable. This map is the single source
+// of truth for 2026 poles — used in both the track times table AND the driver
+// profile poles drill-down. Add one entry per race as each weekend is confirmed.
+// Keyed by circuitId (Jolpica/Ergast convention).
+// Sources: official F1.com qualifying reports.
+const POLE_2026_CORRECTIONS = {
+  'albert_park': { driverId: 'russell',   driver: 'G. Russell',   team: 'Mercedes', conId: 'mercedes', time: '1:18.518', raceName: 'Australian Grand Prix', date: '2026-03-16' },
+  'shanghai':    { driverId: 'antonelli', driver: 'A. Antonelli', team: 'Mercedes', conId: 'mercedes', time: '1:32.064', raceName: 'Chinese Grand Prix',    date: '2026-03-23' },
+};
 
 // ── Championship counts — used as guaranteed fallback when API data is missing ──
 // Driver IDs match Jolpica/Ergast driverId strings.
@@ -3066,7 +3132,7 @@ async function loadTrackTimes() {
     'yas_marina':    { time: '1:22.207', driver: 'M. Verstappen',  team: 'Red Bull', conId: 'red_bull'  },
   };
 
-  // Merge fallback into a pole lookup map — API data takes precedence
+  // Merge fallback into a pole lookup map — API data takes precedence (gaps only)
   function applyPoleFallback(map, fallback) {
     for (const [cId, entry] of Object.entries(fallback)) {
       if (!map[cId]) map[cId] = entry;
@@ -3074,12 +3140,23 @@ async function loadTrackTimes() {
     return map;
   }
 
+  // Force-override entries regardless of what the API returned (corrects bad API data)
+  function applyPoleOverride(map, overrides) {
+    for (const [cId, entry] of Object.entries(overrides)) {
+      map[cId] = entry;
+    }
+    return map;
+  }
+
+  // Use the global POLE_2026_CORRECTIONS as the override source for the track times table.
+
   // POLE_2025_FALLBACK applies to the prevYear column (2025 = last season)
+  // POLE_2026_OVERRIDES corrects bad API data for the current season (2026)
   // qualiCurr = current season (2026), qualiPrev = previous season (2025)
   renderTrackTimes(
     races,
     buildFLLookup(flCurr),   buildFLLookup(flPrev),
-    buildPoleLookup(qualiCurr),
+    applyPoleOverride(buildPoleLookup(qualiCurr), POLE_2026_CORRECTIONS),
     applyPoleFallback(buildPoleLookup(qualiPrev), POLE_2025_FALLBACK),
     currYear, prevYear
   );
@@ -4364,11 +4441,15 @@ async function openDriverProfile(driverId, name, conId) {
     // Query global championship-winner list then filter for this driver client-side.
     // Driver-specific standings endpoints are unreliable on Jolpica; the global
     // /driverstandings/1 endpoint is a simple, well-supported query.
-    const [winsD, p2D, p3D, polesD, allChampsD, fastD, driverD, seasonsD] = await Promise.all([
+    const [winsD, p2D, p3D, polesD, gridPolesD, allChampsD, fastD, driverD, seasonsD] = await Promise.all([
       fetchJSON(`${base}/drivers/${driverId}/results/1.json?limit=0`).catch(() => null),
       fetchJSON(`${base}/drivers/${driverId}/results/2.json?limit=0`).catch(() => null),
       fetchJSON(`${base}/drivers/${driverId}/results/3.json?limit=0`).catch(() => null),
-      fetchJSON(`${base}/drivers/${driverId}/qualifying/1.json?limit=0`).catch(() => null),
+      // Full qualifying list for the drill-down — 2026 entries filtered client-side.
+      fetchJSON(`${base}/drivers/${driverId}/qualifying/1.json?limit=500`).catch(() => null),
+      // Grid P1 count: races where driver started from pole on the MAIN race grid.
+      // This naturally excludes sprint qualifying poles, giving the correct headline count.
+      fetchJSON(`${base}/drivers/${driverId}/grid/1/results.json?limit=0`).catch(() => null),
       fetchJSON(`${base}/driverstandings/1.json?limit=200`).catch(() => null),
       fetchJSON(`${base}/drivers/${driverId}/fastest/1/results.json?limit=0`).catch(() => null),
       fetchJSON(`${base}/drivers/${driverId}.json`).catch(() => null),
@@ -4379,7 +4460,11 @@ async function openDriverProfile(driverId, name, conId) {
     const p2s      = parseInt(p2D?.MRData?.total     || 0);
     const p3s      = parseInt(p3D?.MRData?.total     || 0);
     const podiums  = wins + p2s + p3s;
-    const poles    = parseInt(polesD?.MRData?.total  || 0);
+    // Use grid/1 count (main race starts from pole) — excludes sprint qualifying poles.
+    // Strip any 2026 Jolpica grid data (unreliable) and add confirmed 2026 poles separately.
+    const gridPolesRaces  = (gridPolesD?.MRData?.RaceTable?.Races || []).filter(r => r.season !== '2026');
+    const poles2026       = Object.values(POLE_2026_CORRECTIONS).filter(c => c.driverId === driverId).length;
+    const poles           = gridPolesRaces.length + poles2026;
     // Count seasons where this driver was champion — filter the global P1 list by driverId,
     // then fall back to the hardcoded lookup if the API returns nothing.
     const champSeasons = allChampsD?.MRData?.StandingsTable?.StandingsLists || [];
@@ -4415,10 +4500,15 @@ async function openDriverProfile(driverId, name, conId) {
       }
     } catch(_) {}
 
-    const stat = (val, label, emoji) => `
-      <div class="stat-card">
+    const safeId   = driverId.replace(/'/g, "\\'");
+    const safeName = name.replace(/'/g, "\\'");
+    const safeConId= conId ? conId.replace(/'/g, "\\'") : '';
+
+    const stat = (val, label, emoji, clickFn) => `
+      <div class="stat-card${clickFn ? ' stat-clickable' : ''}" ${clickFn ? `onclick="${clickFn}"` : ''}>
         <div class="stat-value">${val}</div>
         <div class="stat-label">${emoji} ${label}</div>
+        ${clickFn ? '<div class="stat-drill">View all →</div>' : ''}
       </div>`;
 
     content.innerHTML = `
@@ -4436,13 +4526,104 @@ async function openDriverProfile(driverId, name, conId) {
       <div class="modal-section-label">Career Statistics${seasons ? ' · '+seasons+' seasons' : ''}</div>
       <div class="stats-grid">
         ${stat(champs,   'Championships', '🏆')}
-        ${stat(wins,     'Wins',          '🥇')}
-        ${stat(podiums,  'Podiums',       '🏅')}
-        ${stat(poles,    'Pole Positions','🏁')}
+        ${stat(wins,     'Wins',          '🥇', `showDriverResults('${safeId}','${safeName}','${safeConId}','wins')`)}
+        ${stat(podiums,  'Podiums',       '🏅', `showDriverResults('${safeId}','${safeName}','${safeConId}','podiums')`)}
+        ${stat(poles,    'Pole Positions','🏁', `showDriverResults('${safeId}','${safeName}','${safeConId}','poles')`)}
         ${stat(fastLaps, 'Fastest Laps',  '⚡')}
       </div>`;
   } catch(e) {
     content.innerHTML = `<div style="color:var(--text-muted);padding:12px 0">Could not load driver profile: ${e.message}</div>`;
+  }
+}
+
+// ── Driver results drill-down (wins / podiums) ────
+async function showDriverResults(driverId, name, conId, type) {
+  const modal   = document.getElementById('profile-modal');
+  const content = document.getElementById('profile-modal-content');
+  const label   = type === 'wins' ? 'Race Wins' : type === 'poles' ? 'Pole Positions' : 'Podiums';
+  content.innerHTML = `<div class="modal-loading"><div class="modal-spinner"></div>Loading ${label}…</div>`;
+
+  const base  = JOLPICA_BASE.replace(/\/$/, '');
+  const safeId   = driverId.replace(/'/g, "\\'");
+  const safeName = name.replace(/'/g, "\\'");
+  const safeConId= (conId || '').replace(/'/g, "\\'");
+  const posEmoji = p => p === 1 ? '🥇' : p === 2 ? '🥈' : '🥉';
+
+  try {
+    let races = [];
+
+    if (type === 'wins') {
+      const d = await fetchJSON(`${base}/drivers/${driverId}/results/1.json?limit=500`).catch(() => null);
+      races = (d?.MRData?.RaceTable?.Races || []).map(r => ({
+        icon: '🥇',
+        year: r.season,
+        raceName: r.raceName,
+        extra: r.Results?.[0]?.Constructor?.name || '',
+        date: r.date || `${r.season}-01-01`,
+      }));
+    } else if (type === 'poles') {
+      // Jolpica 2026 qualifying data is unreliable — strip all 2026 results from
+      // the API response and replace with POLE_2026_CORRECTIONS (single source of truth).
+      const d = await fetchJSON(`${base}/drivers/${driverId}/qualifying/1.json?limit=500`).catch(() => null);
+      races = (d?.MRData?.RaceTable?.Races || [])
+        .filter(r => r.season !== '2026')   // discard unreliable 2026 API data entirely
+        .map(r => {
+          const q = r.QualifyingResults?.[0] || {};
+          const time = q.Q3 || q.Q2 || q.Q1 || '';
+          return {
+            icon: '🏁',
+            year: r.season,
+            circuitId: r.Circuit?.circuitId || '',
+            raceName: r.raceName,
+            extra: time,
+            date: r.date || `${r.season}-01-01`,
+          };
+        });
+      // Append confirmed 2026 poles for this driver from the authoritative corrections map
+      for (const [, c] of Object.entries(POLE_2026_CORRECTIONS)) {
+        if (c.driverId === driverId) {
+          races.push({ icon: '🏁', year: '2026', circuitId: '', raceName: c.raceName, extra: c.time, date: c.date });
+        }
+      }
+      races.sort((a, b) => b.date.localeCompare(a.date));
+    } else {
+      const [d1, d2, d3] = await Promise.all([
+        fetchJSON(`${base}/drivers/${driverId}/results/1.json?limit=500`).catch(() => null),
+        fetchJSON(`${base}/drivers/${driverId}/results/2.json?limit=500`).catch(() => null),
+        fetchJSON(`${base}/drivers/${driverId}/results/3.json?limit=500`).catch(() => null),
+      ]);
+      const mapR = (d, icon) => (d?.MRData?.RaceTable?.Races || []).map(r => ({
+        icon,
+        year: r.season,
+        raceName: r.raceName,
+        extra: r.Results?.[0]?.Constructor?.name || '',
+        date: r.date || `${r.season}-01-01`,
+      }));
+      races = [...mapR(d1, '🥇'), ...mapR(d2, '🥈'), ...mapR(d3, '🥉')]
+                .sort((a, b) => b.date.localeCompare(a.date));
+    }
+
+    const rows = races.length
+      ? races.map(r => `
+          <div class="result-item">
+            <span class="result-pos">${r.icon}</span>
+            <span class="result-year">${r.year}</span>
+            <span class="result-race">${r.raceName}</span>
+            <span class="result-team">${r.extra}</span>
+          </div>`).join('')
+      : `<div style="color:var(--text-muted);padding:20px 0;text-align:center">No data available</div>`;
+
+    content.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <button class="profile-back-btn" onclick="openDriverProfile('${safeId}','${safeName}','${safeConId}')">← Back</button>
+        <div>
+          <div class="driver-profile-name" style="font-size:16px">${name}</div>
+          <div class="driver-profile-meta">${label} · ${races.length} total</div>
+        </div>
+      </div>
+      <div class="results-drill-list">${rows}</div>`;
+  } catch(e) {
+    content.innerHTML = `<div style="color:var(--text-muted);padding:12px 0">Could not load results: ${e.message}</div>`;
   }
 }
 
