@@ -1273,6 +1273,104 @@
       text-align: right;
       margin-top: 6px;
     }
+
+    /* ── Sector indicator cards ── */
+    .sector-cards-wrap {
+      margin-top: 14px;
+    }
+    .sector-cards-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sector-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 8px;
+    }
+    .sdc {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 10px 11px 11px;
+    }
+    .sdc-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 9px;
+    }
+    .sdc-abbr {
+      font-weight: 800;
+      font-size: 14px;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+    .sdc-laptime {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .sdc-laptime.sdc-lap-purple { color: #b947f5; }
+    .sdc-laptime.sdc-lap-green  { color: #22c55e; }
+    .sdc-sectors {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 5px;
+    }
+    .sdc-sector {
+      border-radius: 7px;
+      padding: 6px 5px 7px;
+      text-align: center;
+      border: 1px solid transparent;
+    }
+    .sdc-sector-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+      opacity: 0.75;
+    }
+    .sdc-sector-val {
+      font-size: 13px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .sdc-sector.sect-purple {
+      background: rgba(185,71,245,0.15);
+      border-color: rgba(185,71,245,0.5);
+    }
+    .sdc-sector.sect-purple .sdc-sector-label,
+    .sdc-sector.sect-purple .sdc-sector-val { color: #d07ef7; }
+    .sdc-sector.sect-green {
+      background: rgba(34,197,94,0.12);
+      border-color: rgba(34,197,94,0.45);
+    }
+    .sdc-sector.sect-green .sdc-sector-label,
+    .sdc-sector.sect-green .sdc-sector-val  { color: #4ade80; }
+    .sdc-sector.sect-yellow {
+      background: rgba(250,204,21,0.1);
+      border-color: rgba(250,204,21,0.35);
+    }
+    .sdc-sector.sect-yellow .sdc-sector-label,
+    .sdc-sector.sect-yellow .sdc-sector-val { color: #fde047; }
+    .sdc-sector.sect-none {
+      background: rgba(255,255,255,0.03);
+      border-color: rgba(255,255,255,0.06);
+    }
+    .sdc-sector.sect-none .sdc-sector-label,
+    .sdc-sector.sect-none .sdc-sector-val   { color: var(--text-dim); }
+
     .weather-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -4236,6 +4334,78 @@ async function renderLiveRace() {
       </div>`;
   }
 
+  // ── Sector indicator cards ──────────────────────────────────────────────────
+  // Shows each driver's most recent lap with big coloured sector blocks.
+  // Purple = overall fastest sector in session  |  Green = driver personal best
+  // Yellow = not a personal best this session
+  function sectorCardClass(val, personalBest, overallFastest) {
+    if (!val || val <= 0) return 'sect-none';
+    if (overallFastest && Math.abs(val - overallFastest) < 0.001) return 'sect-purple';
+    if (personalBest  && Math.abs(val - personalBest)  < 0.001) return 'sect-green';
+    return 'sect-yellow';
+  }
+  function fmtSect(v) { return (v && v > 0) ? v.toFixed(3) : '–'; }
+
+  let sectorCardsHTML = '';
+  if (posOrder.length > 0) {
+    const cardItems = posOrder.map(p => {
+      const dn   = p.driver_number;
+      const d    = driverMap[dn] || {};
+      const lap  = latestLap[dn];
+      const best = bestByDriver[dn] || {};
+      const col  = teamColour(d.team_name);
+      const abbr = d.name_acronym || `#${dn}`;
+
+      const s1 = lap?.duration_sector_1;
+      const s2 = lap?.duration_sector_2;
+      const s3 = lap?.duration_sector_3;
+      const lapDur = lap?.lap_duration;
+
+      // Lap time colour — purple if overall fastest, green if personal best
+      let lapCls = '';
+      if (lapDur && fastLap && Math.abs(lapDur - fastLap) < 0.001) lapCls = 'sdc-lap-purple';
+      else if (lapDur && best.lap && Math.abs(lapDur - best.lap) < 0.001) lapCls = 'sdc-lap-green';
+
+      const lapStr = lapDur ? formatLapTime(lapDur) : '–';
+
+      return `
+        <div class="sdc">
+          <div class="sdc-header">
+            <span style="width:4px;min-height:18px;background:${col};border-radius:2px;flex-shrink:0;align-self:stretch;display:inline-block"></span>
+            <span class="sdc-abbr">${abbr}</span>
+            <span class="sdc-laptime ${lapCls}">${lapStr}</span>
+          </div>
+          <div class="sdc-sectors">
+            <div class="sdc-sector ${sectorCardClass(s1, best.s1, fastS1)}">
+              <div class="sdc-sector-label">S1</div>
+              <div class="sdc-sector-val">${fmtSect(s1)}</div>
+            </div>
+            <div class="sdc-sector ${sectorCardClass(s2, best.s2, fastS2)}">
+              <div class="sdc-sector-label">S2</div>
+              <div class="sdc-sector-val">${fmtSect(s2)}</div>
+            </div>
+            <div class="sdc-sector ${sectorCardClass(s3, best.s3, fastS3)}">
+              <div class="sdc-sector-label">S3</div>
+              <div class="sdc-sector-val">${fmtSect(s3)}</div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    sectorCardsHTML = `
+      <div class="live-panel-card sector-cards-wrap">
+        <div class="sector-cards-title">
+          Latest Lap · Sectors
+          <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:10px">
+            <span style="color:#d07ef7">■</span> Overall fastest &nbsp;
+            <span style="color:#4ade80">■</span> Personal best &nbsp;
+            <span style="color:#fde047">■</span> Not best
+          </span>
+        </div>
+        <div class="sector-cards-grid">${cardItems}</div>
+      </div>`;
+  }
+
   // ── Layout ──
   const hasMapData = _trackPoints && _trackPoints.length > 10 && posOrder.length > 0;
   const mapHTML = `
@@ -4257,6 +4427,7 @@ async function renderLiveRace() {
       </div>
     </div>
     ${bestLapHTML}
+    ${sectorCardsHTML}
     <div class="live-bottom-grid">
       <div>${rcmHTML}${weatherHTML}</div>
       <div>${radioHTML}</div>
